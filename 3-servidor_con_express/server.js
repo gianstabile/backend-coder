@@ -10,6 +10,11 @@ server.on("error", (error) => console.log(`Error en el servidor: ${error}`));
 
 const productos = new Contenedor("productos.txt");
 
+//mensaje de bienvenida
+app.get("/", async (req, res) =>
+  res.send(`<h2>Bienvenidos al servidor.</h2><p>Escriba en la barra de direcciones <strong>/productos</strong> para ver la lista de productos, y <strong>/productoRandom</strong> para ver un producto al azar.</p>`)
+);
+
 //presenta un array de productos
 app.get("/productos", async (req, res) => {
   const allProducts = await productos.getAll();
