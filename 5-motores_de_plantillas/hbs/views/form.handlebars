@@ -1,0 +1,24 @@
+<section class="p-4 bg-light border">
+    <h2 class="text-primary lead">Add Product</h2>
+    <form action='/productos' method='POST'>
+        <div class='mb-3'>
+            <label class='form-label' for='name'>Name</label>
+            <input class="form-control" type='text' name='name' />
+        </div>
+        <div class='mb-3'>
+            <label class='form-label' for='price'>Price</label>
+            <input class="form-control" type='number' name='price' />
+        </div>
+        <div class='mb-3'>
+            <label class='form-label' for='picture'>Picture URL</label>
+            <input class="form-control" type='url' name='picture' />
+        </div>
+        <div class='mb-3'>
+            <input class="btn btn-success" type='submit' value='Submit' />
+            <a href="./listaproductos">
+                 <button class="btn btn-warning">View Products</button>
+            </a>
+        </div>
+    </form>
+
+</section>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <body class="p-4">
+    <section class="p-4 bg-light border">
+      <div class="border">
+        <h2 class="text-primary lead fw-bold p-4">Products View</h2>
+        <% if (productos.length===0) { %>
+        <h2 class="bg-secondary text-light lead p-4 m-0">No products found</h2>
+        <% } else { %>
+        <table class="table table-dark">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Thumb</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% productos.forEach(producto=> { %>
+            <tr class="text-left">
+              <td class="align-middle"><%= producto.name %></td>
+              <td class="align-middle">$<%= producto.price %></td>
+              <td class="align-middle">
+                <img src="<%= producto.picture %>" alt="<%= producto.name %>" />
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+      <div class="mt-3">
+        <a href="./productos">
+          <button class="btn btn-warning">Add Product</button>
+        </a>
+      </div>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+include ./layout.pug
+
+- const classLabel = ['form-label', 'fw-bold']
+- const classDiv = ['mb-3']
+
+section.p-4.bg-secondary
+    h2.text-primary Add Product
+    form(action='/productos' method='POST')
+        div(class=classDiv)
+            label(class=classLabel for='name') Name
+            input.form-control(type='text' name='name')
+        div(class=classDiv)
+            label(class=classLabel for='name') Price
+            input.form-control(type='number' name='price')
+        div(class=classDiv)
+            label(class=classLabel for='name') Picture URL
+            input.form-control(type='url' name='picture')
+        div(class=classDiv)
+            input.btn.btn-success(type='submit' value='Submit')
+    div(class=classDiv)
+        a(href="./listaproductos")
+            button.btn.btn-warning View Products
