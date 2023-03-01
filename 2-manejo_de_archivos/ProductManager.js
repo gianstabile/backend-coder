@@ -18,8 +18,7 @@ export default class ProductManager {
 
   //método para buscar productos por el id
   getProductsById = async (id) => {
-    const data = await fs.promises.readFile(this.path, "utf-8");
-    const products = JSON.parse(data);
+    let products = await this.getProducts();
     let product = products.find((prod) => prod.id === id);
 
     if (!product) {
@@ -65,8 +64,7 @@ export default class ProductManager {
   };
 
   updateProduct = async (id, newData) => {
-    const data = await fs.promises.readFile(this.path, "utf-8");
-    let products = JSON.parse(data);
+    let products = await this.getProducts();
 
     const index = products.findIndex((item) => item.id == id);
     let product = products[index];
@@ -79,8 +77,8 @@ export default class ProductManager {
   };
 
   deleteProduct = async (id) => {
-    const data = await fs.promises.readFile(this.path, "utf-8");
-    const products = JSON.parse(data);
+    let products = await this.getProducts();
+
     if (products.some((prod) => prod.id === id)) {
       let product = products.filter((prod) => prod.id !== id);
       await fs.promises.writeFile(this.path, JSON.stringify(product, null, 2));
