@@ -1,0 +1,20 @@
+[
+  {
+    "title": "Quilmes Cristal",
+    "description": "Cerveza rubia de 1l",
+    "price": 380,
+    "thumbnail": "http://www.quimes.com.ar/imagen1.jpg",
+    "code": 2025,
+    "stock": 100,
+    "id": 1
+  },
+  {
+    "price": 500,
+    "title": "Coca Cola 1.5l",
+    "description": "Gaseosa Coca Cola",
+    "thumbnail": "http://www.coca.com.ar/imagen1.jpg",
+    "code": 2028,
+    "stock": 200,
+    "id": 2
+  }
+]
