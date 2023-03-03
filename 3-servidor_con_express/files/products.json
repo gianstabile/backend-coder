@@ -1,0 +1,83 @@
+[
+  {
+    "title": "Quilmes Cristal",
+    "description": "Cerveza rubia de 1l",
+    "price": 380,
+    "thumbnail": "http://www.quimes.com.ar/imagen1.jpg",
+    "code": 2025,
+    "stock": 100,
+    "id": 1
+  },
+  {
+    "title": "Coca Cola 1.5l",
+    "description": "Gaseosa Coca Cola",
+    "price": 500,
+    "thumbnail": "http://www.coca.com.ar/imagen1.jpg",
+    "code": 2028,
+    "stock": 200,
+    "id": 2
+  },
+  {
+    "title": "Mini OREO",
+    "description": "Galletitas dulces",
+    "price": 250,
+    "thumbnail": "http://www.oreo.com.ar/imagen1.jpg",
+    "code": 1025,
+    "stock": 300,
+    "id": 3
+  },
+  {
+    "title": "Cerealitas Mix Semillas",
+    "description": "Galletitas saladas de semillas",
+    "price": 400,
+    "thumbnail": "http://www.galletas.com.ar/imagen1.jpg",
+    "code": 1028,
+    "stock": 250,
+    "id": 4
+  },
+  {
+    "title": "Elementos Malbec",
+    "description": "Vino tinto Malbec",
+    "price": 620,
+    "thumbnail": "http://www.vino.com.ar/imagen1.jpg",
+    "code": 3015,
+    "stock": 130,
+    "id": 5
+  },
+  {
+    "title": "Toro Blanco Dulce",
+    "description": "Vino blanco dulce de mesa",
+    "price": 480,
+    "thumbnail": "http://www.vino.com.ar/imagen1.jpg",
+    "code": 3025,
+    "stock": 180,
+    "id": 6
+  },
+  {
+    "title": "Agua Mineral ECO 1l",
+    "description": "Agua mineral sin gas ",
+    "price": 380,
+    "thumbnail": "http://www.agua.com.ar/imagen1.jpg",
+    "code": 4001,
+    "stock": 150,
+    "id": 7
+  },
+  {
+    "title": "Soda 1.5l",
+    "description": "Agua gasificada",
+    "price": 280,
+    "thumbnail": "http://www.soda.com.ar/imagen1.jpg",
+    "code": 4020,
+    "stock": 130,
+    "id": 8
+  },
+  {
+    "title": "Surtidas Bagley",
+    "description": "Galletitas dulces surtidas",
+    "price": 450,
+    "thumbnail": "http://www.galletas.com.ar/imagen1.jpg",
+    "code": 1085,
+    "stock": 200,
+    "id": 9
+  }
+]
