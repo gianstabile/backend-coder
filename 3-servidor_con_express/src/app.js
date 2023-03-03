@@ -32,7 +32,7 @@ app.get("/products/:pid", async (req, res) => {
   console.log(product);
 
   if (!product) return res.send({ error: "Not found." });
-  res.json(product);
+  res.send(product);
 });
 
 app.listen(port, (err) => {
