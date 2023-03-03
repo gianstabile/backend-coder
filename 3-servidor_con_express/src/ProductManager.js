@@ -1,8 +1,8 @@
 import fs from "fs";
 
 export default class ProductManager {
-  constructor(path) {
-    this.path = path;
+  constructor() {
+    this.path = "../files/products.json";
   }
 
   //método para leer un producto
@@ -88,3 +88,4 @@ export default class ProductManager {
     }
   };
 }
+
