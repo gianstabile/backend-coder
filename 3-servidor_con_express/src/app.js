@@ -3,7 +3,7 @@ import ProductManager from "./ProductManager.js";
 const app = express();
 
 let port = 8080;
-let manager = new ProductManager();
+let manager = new ProductManager("./files/products.json");
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,8 +27,8 @@ app.get("/products", async (req, res) => {
 //  });
 
 app.get("/products/:pid", async (req, res) => {
-  const { pid } = req.params;
-  const product = await manager.getProductsById(pid);
+  let id = req.params.pid;
+  const product = await manager.getProductsById(Number(id));
   console.log(product);
 
   if (!product) return res.send({ error: "Not found." });
