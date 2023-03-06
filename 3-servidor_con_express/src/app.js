@@ -12,33 +12,38 @@ app.get("/", (req, res) => {
   res.send(`<h3>Welcome to Express server!</h3>`);
 });
 
-//endpint que muestra todos los productos
+//endpint que muestra todos los productos o la cantidad especificada por query
 app.get("/products", async (req, res) => {
-  const allProducts = await manager.getProducts();
-  res.json(allProducts);
-});
+  try {
+    const products = await manager.getProducts();
+    let { limit } = req.query;
 
-//endpoint que filtra por query por cantidad solicitada
-//no me permitía partir de products?limit , por eso agregué una "q" a la url
-app.get("/products/q", async (req, res) => {
-  const limit = req.query.limit;
-  const products = await manager.getProducts();
-
-  if (Number.isNaN(limit)) {
-    return res.send({ Error: "Not found." });
+    if (limit) {
+      if (isNaN(limit)) {
+        throw new Error("Invalid query.");
+      }
+      let filterProducts = products.slice(0, limit);
+      res.send(filterProducts);
+    } else {
+      res.send(products);
+    }
+  } catch (error) {
+    res.json({ Error: error.message });
   }
-
-  const filterProducts = await products.slice(0, limit);
-  res.send(filterProducts);
 });
 
 //endpoint que filtra por params por Id de producto
 app.get("/products/:pid", async (req, res) => {
-  const { pid } = req.params;
-  const product = await manager.getProductsById(Number(pid));
+  try {
+    const { pid } = req.params;
+    const product = await manager.getProductsById(Number(pid));
 
-  if (!product) return res.send({ Error: "Product not found." });
-  res.send(product);
+    if (!product) throw new Error("Product not found.");
+
+    res.send(product);
+  } catch (error) {
+    res.json({ Error: error.message });
+  }
 });
 
 app.listen(port, (err) => {
