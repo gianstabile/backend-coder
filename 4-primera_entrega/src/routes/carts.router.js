@@ -14,14 +14,14 @@ const products = await productManager.getProducts();
 // GET /api/carts/:cid
 router.get("/:cid", async (req, res) => {
   try {
-    const cart = carts.find((cart) => cart.id === parseInt(req.params.cid));
+    const { cid } = req.params;
+    const cart = await cartManager.getCartsById(Number(cid));
+    console.log(cart);
+
     if (!cart)
-      return res.status({
-        status: `Error`,
-        error: `Cart not found.`,
-      });
+      res.status(404).send({ status: `Error`, error: `Cart not found.` });
     return res.status(200).send(cart);
-  } catch (err) {
+  } catch (error) {
     return res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${err}`,
@@ -30,32 +30,18 @@ router.get("/:cid", async (req, res) => {
 });
 
 // POST /api/carts
-router.post("/", uploader.single("file"), async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    const cart = {
-      products: [],
-    };
-
-    if (carts.length === 0) {
-      cart.id = 1;
-    } else {
-      const lastCart = carts[carts.length - 1];
-      if (lastCart.id === undefined) {
-        return res
-          .status(400)
-          .send("The last cart in the list does not have an ID.");
-      }
-      cart.id = lastCart.id + 1;
-    }
-    cartManager.addCart(cart);
+    const { body } = req;
+    const cart = await cartManager.addCart(body);
 
     return res
       .status(200)
       .send({ status: `Success`, response: `Cart created successfully.` });
-  } catch (err) {
+  } catch (error) {
     return res.status(500).send({
       status: `Error`,
-      error: `Internal server error. Exception: ${err}`,
+      error: `Internal server error. Exception: ${error}`,
     });
   }
 });
@@ -65,19 +51,15 @@ router.post("/:cid/products/:pid", async (req, res) => {
   try {
     const cid = parseInt(req.params.cid);
     const pid = parseInt(req.params.pid);
-    const qty =  req.body.qty;
+    const qty = req.body.qty;
 
-    const cart = carts.find((cart) => cart.id === cid);
-    const product = products.find((prod) => prod.id === pid);
+    const cart = await cartManager.getCartsById(Number(cid));
+    const product = await productManager.getProductsById(Number(pid));
 
-    if (!cart)
+    if (!cart || !product)
       return res
         .status(404)
-        .send({ status: `Error`, error: `Cart not found.` });
-    if (!product)
-      return res
-        .status(404)
-        .send({ status: `Error`, error: `Product not found` });
+        .send({ status: `Error`, error: `Cart or product not found.` });
 
     const updateCart = {
       id: pid,
@@ -89,10 +71,10 @@ router.post("/:cid/products/:pid", async (req, res) => {
     return res
       .status(200)
       .send({ status: `Success`, message: `Product added to cart.` });
-  } catch (err) {
+  } catch (error) {
     return res.status(500).send({
       status: `Error`,
-      error: `Internal server error. Exception: ${err}`,
+      error: `Internal server error. Exception: ${error}`,
     });
   }
 });

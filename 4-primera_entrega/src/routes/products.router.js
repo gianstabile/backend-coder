@@ -43,24 +43,32 @@ router.post("/", async (req, res) => {
   newProduct
     ? res
         .status(200)
-        .json({ success: "Product added with ID " + newProduct.id })
+        .json({ Success: "Product added with ID " + newProduct.id })
     : res.status(400).json({
-        error:
+        Error:
           "There was an error, please verify the body content match the schema.",
       });
 });
 
 // PUT api/products/:id
 router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { body } = req;
-  const prodUpdated = await productManager.updateProduct(id, body);
+  try {
+    const { id } = req.params;
+    const { body } = req;
 
-  prodUpdated
-    ? res.status(200).json({ success: "Product updated." })
-    : res
-        .status(404)
-        .json({ error: "Product not found or invalid body content." });
+    const ifExsist = await productManager.getProductsById(Number(id));
+
+    if (!ifExsist) {
+      throw new Error("Product not found.");
+    } else {
+      await productManager.updateProduct(id, body);
+      res.status(200).json({ Success: "Product updated." });
+    }
+  } catch (error) {
+    res
+      .status(404)
+      .json({ Error: "Product not found or invalid body content." });
+  }
 });
 
 // DELETE /api/products/id
@@ -70,8 +78,8 @@ router.delete("/:id", async (req, res) => {
   console.log(prodDeleted);
 
   prodDeleted
-    ? res.status(200).json({ success: "Product successfully removed." })
-    : res.status(404).json({ error: "Product not found." });
+    ? res.status(200).json({ Success: "Product successfully removed." })
+    : res.status(404).json({ Error: "Product not found." });
 });
 
 export default router;
