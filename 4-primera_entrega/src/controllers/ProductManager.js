@@ -45,8 +45,7 @@ export default class ProductManager {
       !thumbnails ||
       !stock
     ) {
-      console.log("Incomplete fields!");
-      return;
+      return "Incomplete fields!";
     }
 
     if (products.length === 0) {

@@ -23,6 +23,22 @@ export default class CartManager {
     }
   };
 
+  getCartsById = async (id) => {
+    try {
+      let carts = await this.getCarts();
+      let cart = carts.find((cart) => cart.id === id);
+
+      if (!cart) {
+        console.log("Cart not found.");
+      } else {
+        console.log(cart);
+        return cart;
+      }
+    } catch (err) {
+      return `Error reading the file. Exception: ${err}`;
+    }
+  };
+
   //método para escribir el archivo de carts
   writeCarts = async (carts) => {
     return await fs.promises.writeFile(
@@ -43,9 +59,23 @@ export default class CartManager {
 
   addCart = async (cart) => {
     try {
+      const cart = {
+        products: [],
+      };
       const carts = await this.getCarts();
+
+      if (carts.length === 0) {
+        cart.id = 1;
+      } else {
+        const lastCart = carts[carts.length - 1];
+        if (lastCart.id === undefined) {
+          return "The last cart in the list does not have an ID.";
+        }
+        cart.id = lastCart.id + 1;
+      }
       carts.push(cart);
       this.writeCarts(carts);
+      return cart;
     } catch (err) {
       return `There was an error adding a new cart. Exception: ${err}`;
     }
