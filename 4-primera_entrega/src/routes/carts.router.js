@@ -20,9 +20,9 @@ router.get("/:cid", async (req, res) => {
 
     if (!cart)
       res.status(404).send({ status: `Error`, error: `Cart not found.` });
-    return res.status(200).send(cart);
+    res.status(200).send(cart);
   } catch (error) {
-    return res.status(500).send({
+    res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${err}`,
     });
@@ -35,11 +35,11 @@ router.post("/", async (req, res) => {
     const { body } = req;
     const cart = await cartManager.addCart(body);
 
-    return res
+    res
       .status(200)
       .send({ status: `Success`, response: `Cart created successfully.` });
   } catch (error) {
-    return res.status(500).send({
+    res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${error}`,
     });
@@ -57,7 +57,7 @@ router.post("/:cid/products/:pid", async (req, res) => {
     const product = await productManager.getProductsById(Number(pid));
 
     if (!cart || !product)
-      return res
+      res
         .status(404)
         .send({ status: `Error`, error: `Cart or product not found.` });
 
@@ -68,11 +68,11 @@ router.post("/:cid/products/:pid", async (req, res) => {
 
     cartManager.addProductToCart(updateCart, cid);
 
-    return res
+    res
       .status(200)
       .send({ status: `Success`, message: `Product added to cart.` });
   } catch (error) {
-    return res.status(500).send({
+    res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${error}`,
     });
