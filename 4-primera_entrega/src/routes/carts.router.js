@@ -52,6 +52,7 @@ router.post("/:cid/products/:pid", async (req, res) => {
     const cid = parseInt(req.params.cid);
     const pid = parseInt(req.params.pid);
     const qty = req.body.qty;
+    let updateCart = {};
 
     const cart = await cartManager.getCartsById(Number(cid));
     const product = await productManager.getProductsById(Number(pid));
@@ -61,10 +62,9 @@ router.post("/:cid/products/:pid", async (req, res) => {
         .status(404)
         .send({ status: `Error`, error: `Cart or product not found.` });
 
-    const updateCart = {
-      id: pid,
-      quantity: qty,
-    };
+    !qty
+      ? ((updateCart.id = pid), (updateCart.quantity = +1))
+      : ((updateCart.id = pid), (updateCart.quantity = qty));
 
     cartManager.addProductToCart(updateCart, cid);
 
