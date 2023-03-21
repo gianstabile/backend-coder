@@ -1,0 +1,122 @@
+[
+	{
+		"title": "Quilmes Cristal",
+		"description": "Cerveza rubia de 1l",
+		"price": 380,
+		"thumbnail": "https://vinotecalavia.com/3543-large_default/quilmes-cristal-retornable-x-970.jpg",
+		"code": 2025,
+		"stock": 100,
+		"category": "Bebidas con alcohol",
+		"id": 1
+	},
+	{
+		"title": "Coca Cola 1.5l",
+		"description": "Gaseosa Coca Cola",
+		"price": 500,
+		"thumbnail": "http://inspiravinoteca.com/web/image/product.template/4676/image_1024?unique=0764b2f",
+		"code": 2028,
+		"stock": 200,
+		"category": "Bebidas sin alcohol",
+		"id": 2
+	},
+	{
+		"title": "Mini OREO",
+		"description": "Galletitas dulces",
+		"price": 250,
+		"thumbnail": "https://depositoelmayorista.com.ar/wp-content/uploads/2019/12/productos-nuevos-2.png",
+		"code": 1025,
+		"stock": 300,
+		"category": "Galletitas",
+		"id": 3
+	},
+	{
+		"title": "Hogareñas 7 Semillas",
+		"description": "Galletitas saladas de semillas",
+		"price": 400,
+		"thumbnail": "https://www.deliargentina.com/image/cache/catalog/product/alimentacion/galletas-6-semillas-arcor-argentina/galletas-hogarenas-6-semillas-arcor-argentina-barcelona-madrid-galletitas-800x800.jpg",
+		"code": 1028,
+		"stock": 250,
+		"category": "Galletitas",
+		"id": 4
+	},
+	{
+		"title": "Elementos Malbec",
+		"description": "Vino tinto Malbec",
+		"price": 620,
+		"thumbnail": "https://cepadevinos.com/wp-content/uploads/2016/09/ELEMENTOS-Malbec-e1622668205685.png",
+		"code": 3015,
+		"stock": 130,
+		"category": "Bebidas con alcohol",
+		"id": 5
+	},
+	{
+		"title": "Toro Blanco Dulce",
+		"description": "Vino blanco dulce de mesa",
+		"price": 480,
+		"thumbnail": "https://ardiaprod.vtexassets.com/arquivos/ids/188784/Vino-Blanco-Dulce-Toro-1-Lt-_1.jpg?v=637427632066900000",
+		"code": 3025,
+		"stock": 180,
+		"category": "Bebidas con alcohol",
+		"id": 6
+	},
+	{
+		"title": "Agua Mineral ECO 1l",
+		"description": "Agua mineral sin gas ",
+		"price": 380,
+		"thumbnail": "data:image/jpeg;base64,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",
+		"code": 4001,
+		"stock": 150,
+		"category": "Bebidas sin alcohol",
+		"id": 7
+	},
+	{
+		"title": "Soda Villavicencio 1.5l",
+		"description": "Agua gasificada",
+		"price": 280,
+		"thumbnail": "https://jumboargentina.vtexassets.com/arquivos/ids/556233/Villavicencio-Pet-Con-Gas-15-L-2-238193.jpg?v=637105938817370000",
+		"code": 4020,
+		"stock": 130,
+		"category": "Bebidas sin alcohol",
+		"id": 8
+	},
+	{
+		"title": "Surtido Bagley 400g",
+		"description": "Galletitas dulces surtidas",
+		"price": 450,
+		"thumbnail": "https://www.sakoteacasa.com.ar/wp-content/uploads/2018/05/21059.jpg",
+		"code": 1085,
+		"stock": 200,
+		"category": "Galletitas",
+		"id": 9
+	},
+	{
+		"title": "Corona 1l",
+		"description": "Cerveza rubia Corona de 1l",
+		"price": 520,
+		"stock": 450,
+		"category": "Bebidas con alcohol",
+		"code": 26252,
+		"thumbnail": "https://www.luciasupermercado.com/7962-large_default/cerveza-corona-x-710-cc.jpg",
+		"id": 10
+	},
+	{
+		"title": "Terma Serrano 1.35l",
+		"description": "Bebida sin alcohol a base de hierbas",
+		"price": 420,
+		"stock": 300,
+		"category": "Bebidas sin alcohol",
+		"code": 36253,
+		"thumbnail": "https://d2r9epyceweg5n.cloudfront.net/stores/002/287/525/products/221-a3b96592d6906eace216693310759102-1024-1024.png",
+		"id": 11
+	},
+	{
+		"title": "Coca Zero",
+		"description": "Gaseosa dulce",
+		"price": 500,
+		"stock": 125,
+		"category": "Gaseosas",
+		"code": 25629,
+		"thumbnail": "",
+		"id": 12
+	}
+]
