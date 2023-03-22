@@ -1,3 +1,4 @@
+"use strict";
 import { Server } from "socket.io";
 import ProductManager from "./controllers/ProductManager.js";
 
