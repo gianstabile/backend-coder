@@ -45,12 +45,10 @@
                         </ul>
                       </div>
                       <div>
-                        <input
-                          id={{id}}
-                          class="btn btn-danger my-3 btnDelete"
-                          type="button"
-                          value="X"
-                        />
+                        <button
+                          data-id={{id}}
+                          class="btn btn-danger my-3 btn-delete-product"
+                        >X</button>
                       </div>
                     </div>
                   </div></div>
@@ -67,10 +65,11 @@
           <div class="row">
             <div class="container mx-auto my-5">
               <form
+                enctype="multipart/form-data"
+                method="post"
+                name="addProduct"
                 id="addProduct"
                 action="/api/products"
-                method="POST"
-                enctype="multipart/form-data"
               >
                 <fieldset>
                   <legend class="bg-dark text-white p-2 text-center">Add a
@@ -138,13 +137,14 @@
                     />
                     <div>
                       <div class="form-group">
-                        <label for="product_thumb">Thumbnail:</label>
+                        <label for="product_thumb">Thumbnails:</label>
                         <input
                           type="file"
-                          name="uploadedFile"
+                          name={{thumbnails}}
                           class="form-control"
                           form="addProduct"
-                          id="product_thumbnail"
+                          id="product_thumbnails"
+                          multiple
                           autofocus
                         />
                       </div>
