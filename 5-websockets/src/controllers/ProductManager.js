@@ -22,9 +22,8 @@ export default class ProductManager {
     let product = products.find((prod) => prod.id === id);
 
     if (!product) {
-      console.log("Product not found.");
+      return "Product not found.";
     } else {
-      console.log(product);
       return product;
     }
   };
@@ -32,7 +31,7 @@ export default class ProductManager {
   //metodo para agregar nuevos productos
   addProduct = async (product) => {
     let products = await this.getProducts();
-    const { title, description, price, stock, category, code, thumbnail } =
+    const { code, title, description, price, stock, category, thumbnails } =
       product;
 
     // validacion de campos requeridos
@@ -42,7 +41,7 @@ export default class ProductManager {
       !description ||
       !price ||
       !category ||
-      // !thumbnail ||
+      !thumbnails ||
       !stock
     ) {
       return "Incomplete fields!";
@@ -59,29 +58,32 @@ export default class ProductManager {
     if (!productCode) {
       console.log("Product add succefully.");
       products.push(product);
+      await fs.promises.writeFile(
+        this.path,
+        JSON.stringify(products, null, "\t")
+      );
     } else {
       console.log("Product already added!");
       return;
     }
-
-    await fs.promises.writeFile(
-      this.path,
-      JSON.stringify(products, null, "\t")
-    );
-    return product;
   };
 
   updateProduct = async (id, newData) => {
     let products = await this.getProducts();
 
-    const index = products.findIndex((item) => item.id == id);
+    const index = products.findIndex((item) => item.id === id);
     let product = products[index];
-    products = products.filter((item) => item.id != id);
 
-    product = { ...product, ...newData };
-    products.splice(index, 0, product);
-    await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
-    return product;
+    //validación por si no encuentra la ID
+    if (!product) {
+      throw "Product ID not found";
+    } else {
+      products = products.filter((item) => item.id != id);
+      product = { ...product, ...newData };
+      products.splice(index, 0, product);
+      await fs.promises.writeFile(this.path, JSON.stringify(products, null, 2));
+      return product;
+    }
   };
 
   deleteProduct = async (id) => {
