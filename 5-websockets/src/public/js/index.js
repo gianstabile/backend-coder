@@ -6,9 +6,10 @@ const productCode = document.querySelector("#product_code");
 const productPrice = document.querySelector("#product_price");
 const productCategory = document.querySelector("#product_category");
 const productStock = document.querySelector("#product_stock");
-const productThumbnail = document.querySelector("#product_thumbnail");
+const productThumbnails = document.querySelector("#product_thumbnails");
 const productDescription = document.querySelector("#product_description");
-const btnDelete = document.getElementsByClassName(".btnDelete");
+document.getElementById("fileNameLabel").innerHTML = productThumbnails;
+// const deleteButtons = document.querySelectorAll(".btn-delete-product");
 
 formProduct.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -20,6 +21,21 @@ formProduct.addEventListener("submit", (e) => {
     stock: Number(productStock.value),
     category: productCategory.value,
     code: Number(productCode.value),
-    thumbnail: productThumbnail.value,
+    thumbnails: productThumbnails.value,
   });
 });
+
+// deleteButtons.forEach((button) => {
+//   button.addEventListener("click", (e) => {
+//     e.preventDefault();
+//     // Obtener el ID del producto que se desea eliminar
+//     const productId = e.target.dataset.id;
+
+//     // Aquí se llama a una función para eliminar el producto por su ID
+//     deleteProduct(productId);
+//   });
+// });
+
+// function deleteProduct(productId) {
+//   console.log("Eliminado: " + productId);
+// }
