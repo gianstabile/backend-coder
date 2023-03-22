@@ -37,31 +37,30 @@ router.get("/:pid", async (req, res) => {
 });
 
 // POST api/products
-router.post("/",async (req, res) => {
-  const { body } = req;
-  const newProduct = await productManager.addProduct(body);
+router.post("/", uploader.array("thumbnails", 3), async (req, res) => {
+  const product = req.body;
+  const files = req.files;
 
-  newProduct
-    ? res
-        .status(200)
-        .json({ Success: "Product added with ID " + newProduct.id })
-    : res.status(400).json({
-        Error:
-          "There was an error, please verify the body content match the schema.",
-      });
+  if (!product) {
+    res.status(400).send({
+      status: "Error",
+      Error:
+        "There was an error, please verify the body content match the schema.",
+    });
+  }
+
+  product.thumbnails = [];
+
+  if (files) {
+    files.forEach((file) => {
+      const imageUrl = `http://localhost:8080/images/${file.filename}`;
+      product.thumbnails.push(imageUrl);
+    });
+  }
+
+  await productManager.addProduct(product);
+  res.send({ status: "Ok", message: "Product successfully added!" });
 });
-
-// POST api/upload
-// router.post("/upload", uploader.single("file"), async(req, res) =>{
-//   if(!req.file){
-//     res.status(400).send({status: "error", error: "Can't upload image."})
-//   }
-//   console.log(req.file);
-
-//   let upload = req.body;
-//   upload.profile = req.file.path;
-
-// })
 
 // PUT api/products/:id
 router.put("/:id", async (req, res) => {
