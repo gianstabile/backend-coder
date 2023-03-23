@@ -9,7 +9,7 @@ const cartManager = new CartManager();
 const productManager = new ProductManager();
 
 const carts = await cartManager.listCarts();
-const products = await productManager.getProducts();
+
 
 // GET /api/carts/:cid
 router.get("/:cid", async (req, res) => {

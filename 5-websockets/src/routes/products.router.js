@@ -3,13 +3,15 @@ import { uploader } from "../utils.js";
 import ProductManager from "../controllers/ProductManager.js";
 
 const router = Router();
+const URL = "http://localhost:8080/images/";
+
 const productManager = new ProductManager();
+const products = await productManager.getProducts();
 
 // GET api/products
 router.get("/", async (req, res) => {
   try {
-    const products = await productManager.getProducts();
-    let { limit } = req.query;
+    const { limit } = req.query;
 
     if (limit) {
       let filterProducts = products.slice(0, Number(limit));
@@ -37,29 +39,33 @@ router.get("/:pid", async (req, res) => {
 });
 
 // POST api/products
-router.post("/", uploader.array("thumbnails", 3), async (req, res) => {
-  const product = req.body;
-  const files = req.files;
+router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
+  try {
+    const thumbnails = req.files
+      ? req.files.map((file) => `${URL}${file.filename}`)
+      : null;
+    if (!thumbnails) {
+      return res
+        .status(400)
+        .send({ status: `Error`, error: `Could not load any files.` });
+    }
 
-  if (!product) {
-    res.status(400).send({
-      status: "Error",
-      Error:
-        "There was an error, please verify the body content match the schema.",
-    });
+    const product = {
+      title: req.body.title,
+      description: req.body.description,
+      price: req.body.price,
+      status: req.body.status,
+      code: req.body.code,
+      stock: req.body.stock,
+      category: req.body.category,
+      thumbnails: thumbnails,
+    };
+
+    await productManager.addProduct(product);
+    res.status(200).send({ status: `Success`, response: `Add product succesfully!` });
+  } catch (err) {
+    return res.status(500).send(next(err));
   }
-
-  product.thumbnails = [];
-
-  if (files) {
-    files.forEach((file) => {
-      const imageUrl = `http://localhost:8080/images/${file.filename}`;
-      product.thumbnails.push(imageUrl);
-    });
-  }
-
-  await productManager.addProduct(product);
-  res.send({ status: "Ok", message: "Product successfully added!" });
 });
 
 // PUT api/products/:id
@@ -85,13 +91,16 @@ router.put("/:id", async (req, res) => {
 
 // DELETE /api/products/id
 router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  const prodDeleted = await productManager.deleteProduct(id);
-  console.log(prodDeleted);
+  try {
+    const { id } = req.params;
+    const prodDeleted = await productManager.deleteProduct(id);
 
-  prodDeleted
-    ? res.status(200).json({ Success: "Product successfully removed." })
-    : res.status(404).json({ Error: "Product not found." });
+    if (prodDeleted) {
+      res.status(200).json({ Success: "Product successfully removed." });
+    }
+  } catch (error) {
+    res.status(404).json({ Error: "Product not found." });
+  }
 });
 
 export default router;

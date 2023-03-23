@@ -3,10 +3,10 @@ import ProductManager from "../controllers/ProductManager.js";
 
 const router = Router();
 const productManager = new ProductManager();
+const products = await productManager.getProducts();
 
+//vista estática
 router.get("/", async (req, res) => {
-  let products = await productManager.getProducts();
-
   res.render("home", {
     style: "index.css",
     title: "List of products",
@@ -15,14 +15,12 @@ router.get("/", async (req, res) => {
   });
 });
 
+//vista en tiempo real
 router.get("/realtimeproducts", async (req, res) => {
-  let products = await productManager.getProducts();
-
   res.render("realTimeProducts", {
     style: "index.css",
     title: "List of products",
     nameShopping: "SuperMax",
-    products,
   });
 });
 
