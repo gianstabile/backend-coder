@@ -1,41 +1,87 @@
+//index para el home con websocket
 const socket = io();
 
-const formProduct = document.querySelector("#addProduct");
-const productTitle = document.querySelector("#product_title");
-const productCode = document.querySelector("#product_code");
-const productPrice = document.querySelector("#product_price");
-const productCategory = document.querySelector("#product_category");
-const productStock = document.querySelector("#product_stock");
-const productThumbnails = document.querySelector("#product_thumbnails");
-const productDescription = document.querySelector("#product_description");
-document.getElementById("fileNameLabel").innerHTML = productThumbnails;
-// const deleteButtons = document.querySelectorAll(".btn-delete-product");
+socket.on("products", (products) => {
+  if (products) {
+    const productsContainer = document.getElementById("products-container");
+    productsContainer.innerHTML = "";
 
-formProduct.addEventListener("submit", (e) => {
-  e.preventDefault();
+    products.forEach((product) => {
+      const productElement = document.createElement("div");
+      productElement.classList = "card m-2";
+      productElement.style = "width: 18rem";
+      productElement.innerHTML = `
+      <div class="p-3 text-center">
+        <h5 class="h5">${product.title}</h5>
+        <p>${product.description}</p>
+        <p>Price: <span class="text-success">$${product.price}</span>  |  Stock: ${product.stock}</p>
+        <p></p>
+        <button class="btn btn-danger" id="deleteButton-${product.id}">X</button>
+      </div>
+      `;
 
-  socket.emit("client:addproduct", {
-    title: productTitle.value,
-    description: productDescription.value,
-    price: Number(productPrice.value),
-    stock: Number(productStock.value),
-    category: productCategory.value,
-    code: Number(productCode.value),
-    thumbnails: productThumbnails.value,
-  });
+      const deleteButton = productElement.querySelector(
+        `#deleteButton-${product.id}`
+      );
+      deleteButton.addEventListener("click", () => {
+        socket.emit("deleteProduct", { id: product.id });
+      });
+
+      product.thumbnails.forEach((image) => {
+        const imgElement = document.createElement("img");
+        imgElement.src = image;
+        imgElement.alt = product.title;
+        imgElement.classList = "thumb img-thumbnail";
+        productElement.appendChild(imgElement);
+      });
+      productsContainer.appendChild(productElement);
+    });
+  }
 });
 
-// deleteButtons.forEach((button) => {
-//   button.addEventListener("click", (e) => {
-//     e.preventDefault();
-//     // Obtener el ID del producto que se desea eliminar
-//     const productId = e.target.dataset.id;
+const form = document.getElementById("productForm");
+const submitButton = document.getElementById("submitForm");
 
-//     // Aquí se llama a una función para eliminar el producto por su ID
-//     deleteProduct(productId);
-//   });
-// });
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
 
-// function deleteProduct(productId) {
-//   console.log("Eliminado: " + productId);
-// }
+  const formData = new FormData(event.target);
+
+  fetch("/api/products", {
+    method: "POST",
+    body: formData,
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status === "Success") {
+        document.getElementById("result").innerHTML = `
+          <div class="alert alert-success" role="alert">
+            ${data.response}
+          </div>
+        `;
+        form.reset();
+      } else {
+        document.getElementById("result").innerHTML = `
+          <div class="alert alert-danger" role="alert">
+            Error al crear el producto
+          </div>
+        `;
+      }
+    })
+    .catch((error) => {
+      document.getElementById("result").innerHTML = `
+        <div class="alert alert-danger" role="alert">
+          Error al crear el producto. Error: ${error}
+        </div>
+      `;
+    });
+});
+
+socket.on("productCreated", (result) => {
+  const resultDiv = document.getElementById("result");
+  if (result.success) {
+    resultDiv.innerHTML = "Product added succesfully";
+  } else {
+    resultDiv.innerHTML = "Unable to create product: " + result.error;
+  }
+});
