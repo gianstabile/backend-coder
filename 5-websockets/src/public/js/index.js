@@ -8,12 +8,12 @@ socket.on("products", (products) => {
 
     products.forEach((product) => {
       const productElement = document.createElement("div");
-      productElement.classList = "card m-2";
-      productElement.style = "width: 18rem";
+      productElement.classList = "card m-1";
+      productElement.style = "width: 14rem";
       productElement.innerHTML = `
-      <div class="my-3">
+      <div class="my-1">
         <div class="text-center"><img class="thumb" src="${product.thumbnails}" alt="${product.title}}"/></div>
-        <div class="p-3 text-center">
+        <div class="p-2 text-center">
           <h5 class="h5">${product.title}</h5>
           <p>${product.description}</p>
           <p>Price: <span class="text-success">$${product.price}</span>  |  Stock: ${product.stock}</p>
