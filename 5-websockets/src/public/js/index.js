@@ -59,7 +59,7 @@ form.addEventListener("submit", (event) => {
       } else {
         document.getElementById("result").innerHTML = `
           <div class="alert alert-danger" role="alert">
-            Error al crear el producto
+          Error creating the product.
           </div>
         `;
       }
@@ -67,7 +67,7 @@ form.addEventListener("submit", (event) => {
     .catch((error) => {
       document.getElementById("result").innerHTML = `
         <div class="alert alert-danger" role="alert">
-          Error al crear el producto. Error: ${error}
+        Error creating the product. Error: ${error}
         </div>
       `;
     });
