@@ -20,7 +20,7 @@
                       <div>
                         <img
                           class="thumb img-thumbnail"
-                          src="{{thumbnail}}"
+                          src="{{thumbnails}}"
                           alt="{{title}}"
                         />
                       </div>
@@ -119,13 +119,15 @@
                     />
                     <div>
                       <div class="form-group">
-                        <label for="product-thumb">Thumbnail:</label>
+                        <label for="thumbnails">Thumbnails*</label>
                         <input
                           type="file"
-                          name="uploadedFile"
+                          multiple="true"
                           class="form-control"
-                          form="addProduct"
-                          id="product-thumb"
+                          id="thumbnails"
+                          name="thumbnails"
+                          multiple
+                          autofocus
                         />
                       </div>
                       <div class="form-group">
@@ -143,9 +145,10 @@
                       </div>
                       <div class="form-group my-3">
                         <input
-                          class="btn btn-secondary"
                           type="submit"
-                          value="Add product"
+                          value="+ product"
+                          class="btn btn-dark w-100 font-weight-bold"
+                          id="submitForm"
                         />
                       </div>
 
@@ -162,3 +165,4 @@
     </div>
   </div>
 </div>
+<script src="/js/index2.js"></script>
