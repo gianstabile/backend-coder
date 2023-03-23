@@ -7,7 +7,7 @@ const products = await productManager.getProducts();
 
 //vista estática
 router.get("/", async (req, res) => {
-  res.render("home", {
+  res.render("index", {
     style: "index.css",
     title: "List of products",
     nameShopping: "SuperMax",
