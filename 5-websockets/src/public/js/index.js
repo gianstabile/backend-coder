@@ -11,12 +11,15 @@ socket.on("products", (products) => {
       productElement.classList = "card m-2";
       productElement.style = "width: 18rem";
       productElement.innerHTML = `
-      <div class="p-3 text-center">
-        <h5 class="h5">${product.title}</h5>
-        <p>${product.description}</p>
-        <p>Price: <span class="text-success">$${product.price}</span>  |  Stock: ${product.stock}</p>
-        <p></p>
-        <button class="btn btn-danger" id="deleteButton-${product.id}">X</button>
+      <div class="my-3">
+        <div class="text-center"><img class="thumb" src="${product.thumbnails}" alt="${product.title}}"/></div>
+        <div class="p-3 text-center">
+          <h5 class="h5">${product.title}</h5>
+          <p>${product.description}</p>
+          <p>Price: <span class="text-success">$${product.price}</span>  |  Stock: ${product.stock}</p>
+          <p></p>
+          <button class="btn btn-danger" id="deleteButton-${product.id}">X</button>
+        </div>
       </div>
       `;
 
@@ -27,13 +30,6 @@ socket.on("products", (products) => {
         socket.emit("deleteProduct", { id: product.id });
       });
 
-      product.thumbnails.forEach((image) => {
-        const imgElement = document.createElement("img");
-        imgElement.src = image;
-        imgElement.alt = product.title;
-        imgElement.classList = "thumb img-thumbnail";
-        productElement.appendChild(imgElement);
-      });
       productsContainer.appendChild(productElement);
     });
   }
