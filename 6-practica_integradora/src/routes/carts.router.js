@@ -9,6 +9,23 @@ const router = Router();
 const cartManager = new CartManager();
 const productManager = new ProductManager();
 
+// GET /api/carts
+router.get("/", async (req, res) => {
+  try {
+    const carts = await cartManager.getCarts();
+
+    if (!carts)
+      res.status(404).send({ status: `Error`, error: `Carts not found.` });
+
+    return res.send({ status: "success", payload: carts });
+  } catch (error) {
+    res.status(500).send({
+      status: `Error`,
+      error: `Internal server error. Exception: ${error}`,
+    });
+  }
+});
+
 // GET /api/carts/:cid
 router.get("/:cid", async (req, res) => {
   try {
@@ -22,7 +39,7 @@ router.get("/:cid", async (req, res) => {
   } catch (error) {
     res.status(500).send({
       status: `Error`,
-      error: `Internal server error. Exception: ${err}`,
+      error: `Internal server error. Exception: ${error}`,
     });
   }
 });
@@ -31,11 +48,13 @@ router.get("/:cid", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { body } = req;
-    const cart = await cartManager.createCart(body);
+    const cart = await cartManager.addCart(body);
 
-    res
-      .status(200)
-      .send({ status: `Success`, response: `Cart created successfully.` });
+    res.status(200).send({
+      status: `Success`,
+      payload: cart,
+      response: `Cart created successfully.`,
+    });
   } catch (error) {
     res.status(500).send({
       status: `Error`,
