@@ -14,12 +14,15 @@ router.get("/", async (req, res) => {
   try {
     const carts = await cartManager.getCarts();
 
-    if (!carts)
-      res.status(404).send({ status: `Error`, error: `Carts not found.` });
+    if (!carts) {
+      return res
+        .status(404)
+        .send({ status: `Error`, error: `Carts not found.` });
+    }
 
     return res.send({ status: "success", payload: carts });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${error}`,
     });
@@ -32,12 +35,15 @@ router.get("/:cid", async (req, res) => {
     const { cid } = req.params;
     const cart = await cartManager.getCartsById(cid);
 
-    if (!cart)
-      res.status(404).send({ status: `Error`, error: `Cart not found.` });
+    if (!cart) {
+      return res
+        .status(404)
+        .send({ status: `Error`, error: `Cart not found.` });
+    }
 
     return res.send({ status: "success", payload: cart });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${error}`,
     });
@@ -50,13 +56,13 @@ router.post("/", async (req, res) => {
     const { body } = req;
     const cart = await cartManager.addCart(body);
 
-    res.status(200).send({
+    return res.status(200).send({
       status: `Success`,
       payload: cart,
       response: `Cart created successfully.`,
     });
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).send({
       status: `Error`,
       error: `Internal server error. Exception: ${error}`,
     });
@@ -66,32 +72,33 @@ router.post("/", async (req, res) => {
 // POST /api/carts/:cid/products/:pid
 router.post("/:cid/products/:pid", async (req, res) => {
   try {
-    const cid = parseInt(req.params.cid);
-    const pid = parseInt(req.params.pid);
+    const cid = req.params.cid;
+    const pid = req.params.pid;
     const qty = req.body.qty;
-    let updateCart = {};
 
-    const cart = await cartManager.getCartsById(Number(cid));
-    const product = await productManager.getProductsById(Number(pid));
+    const cart = await cartManager.getCartsById(cid);
+    const product = await productManager.getProductsById(pid);
 
-    if (!cart || !product)
-      res
+    if (!cart || !product) {
+      return res
         .status(404)
         .send({ status: `Error`, error: `Cart or product not found.` });
+    }
 
-    !qty
-      ? ((updateCart.id = pid), (updateCart.quantity = +1))
-      : ((updateCart.id = pid), (updateCart.quantity = qty));
+    if (!qty) {
+      await cartManager.addProductToCart(cid, pid);
+    } else {
+      await cartManager.addProductToCart(cid, pid, qty);
+    }
 
-    cartManager.addProductToCart(updateCart, cid);
-
-    res
+    return res
       .status(200)
       .send({ status: `Success`, message: `Product added to cart.` });
   } catch (error) {
-    res.status(500).send({
+    console.error(error);
+    return res.status(500).send({
       status: `Error`,
-      error: `Internal server error. Exception: ${error}`,
+      error: `Internal server error. Please try again later.`,
     });
   }
 });
