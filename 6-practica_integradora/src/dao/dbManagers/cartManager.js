@@ -21,10 +21,11 @@ export default class CartManager {
       if (cart) {
         return cart;
       } else {
-        return [];
+        return null;
       }
     } catch (error) {
       console.log(error);
+      throw error; // Lanzar la excepción para manejarla en un nivel superior
     }
   };
 
@@ -37,12 +38,11 @@ export default class CartManager {
     }
   };
 
-  addProduct = async (cartId, productId, quantity) => {
+  addProductToCart = async (cartId, productId) => {
     try {
       const updatedCart = await cartModel.updateOne(
-        { _id: cartId },
-        { $addToSet: { product: productId } },
-        { quantity }
+        { _id: cartId }, 
+        { $addToSet: { products: productId } } 
       );
       return updatedCart;
     } catch (error) {
