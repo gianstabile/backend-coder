@@ -11,7 +11,7 @@ export default class CartManager {
         return [];
       }
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
@@ -25,7 +25,7 @@ export default class CartManager {
       }
     } catch (error) {
       console.log(error);
-      throw error; // Lanzar la excepción para manejarla en un nivel superior
+      throw error;
     }
   };
 
@@ -34,19 +34,20 @@ export default class CartManager {
       const createdCart = await cartModel.create(cart);
       return createdCart;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   };
 
-  addProductToCart = async (cartId, productId) => {
+  addProductToCart = async (cartId, productId, quantity) => {
     try {
       const updatedCart = await cartModel.updateOne(
-        { _id: cartId }, 
-        { $addToSet: { products: productId } } 
+        { _id: cartId },
+        { $addToSet: { products: { productId, quantity } } }
       );
       return updatedCart;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   };
 }
