@@ -20,16 +20,19 @@ const dbName = process.env.DB_NAME;
 const port = process.env.PORT || 8080;
 
 //mongoose
-const environment = async () => {
-  mongoose.connect(
-    `mongodb+srv://${dbUser}:${dbPassword}@practica-integradora.d7s7guz.mongodb.net/${dbName}?retryWrites=true&w=majority`
-  );
-};
+mongoose.connect(
+  `mongodb+srv://${dbUser}:${dbPassword}@practica-integradora.d7s7guz.mongodb.net/${dbName}?retryWrites=true&w=majority`,
+  { useNewUrlParser: true, useUnifiedTopology: true }
+).then(() => {
+  console.log("Connected to MongoDB");
+}).catch((err) => {
+  console.error("Error connecting to MongoDB:", err);
+});
 
 //socket.io
 const httpServer = app.listen(port, (err) => {
   if (err) console.log(err);
-  console.log("Server ready in port", port);
+  console.log("Server ready on port", port);
 });
 socket.connect(httpServer);
 
@@ -56,5 +59,3 @@ app.use("/api/carts", cartsRouter);
 
 app.get("/", viewsRouter);
 app.get("/realtimeproducts", viewsRouter);
-
-environment();
