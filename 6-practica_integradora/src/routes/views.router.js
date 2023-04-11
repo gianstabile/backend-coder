@@ -5,24 +5,32 @@ import ProductManager from "../dao/dbManagers/productManager.js";
 const productManager = new ProductManager();
 const router = Router();
 
-//vista estática
+// Vista estática
 router.get("/", async (req, res) => {
-  const products = await productManager.getProducts()
-  res.render("index", {
-    style: "index.css",
-    title: "List of products",
-    nameShopping: "SuperMax",
-    products,
-  });
+  try {
+    const products = await productManager.getProducts();
+    res.render("index", {
+      style: "index.css",
+      title: "List of products",
+      nameShopping: "SuperMax",
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
 });
 
-//vista en tiempo real
+// Vista en tiempo real
 router.get("/realtimeproducts", async (req, res) => {
-  res.render("realTimeProducts", {
-    style: "index.css",
-    title: "List of products",
-    nameShopping: "SuperMax",
-  });
+  try {
+    res.render("realTimeProducts", {
+      style: "index.css",
+      title: "List of products",
+      nameShopping: "SuperMax",
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error." });
+  }
 });
 
 export default router;

@@ -29,7 +29,7 @@ router.get("/:pid", async (req, res) => {
 
     res.status(200).send(product);
   } catch (error) {
-    res.status(400).json({ Error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -42,7 +42,7 @@ router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
     if (!thumbnails) {
       return res
         .status(400)
-        .send({ status: `Error`, error: `Could not load any files.` });
+        .send({ status: "Error", error: "Could not load any files." });
     }
 
     const title = req.body.title;
@@ -78,9 +78,9 @@ router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
     } else {
       await productModel.create(product);
       res.status(200).send({
-        status: `Success`,
+        status: "Success",
         payload: product,
-        response: `Add product succesfully!`,
+        response: "Add product successfully!",
       });
     }
   } catch (err) {
@@ -109,7 +109,7 @@ router.put("/:pid", async (req, res) => {
   } catch (error) {
     res
       .status(404)
-      .json({ Error: "Product not found or invalid body content." });
+      .json({ error: "Product not found or invalid body content." });
   }
 });
 
@@ -125,9 +125,11 @@ router.delete("/:pid", async (req, res) => {
         payload: deletedProduct,
         response: "Product successfully removed.",
       });
+    } else {
+      res.status(404).json({ error: "Product not found." });
     }
   } catch (error) {
-    res.status(404).json({ Error: "Product not found." });
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 
