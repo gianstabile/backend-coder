@@ -103,4 +103,22 @@ router.post("/:cid/products/:pid", async (req, res) => {
   }
 });
 
+// DELETE /api/carts/:cid
+router.delete("/:cid", async (req, res) => {
+  try {
+    const { cid } = req.params;
+    const result = await cartManager.deleteCart({ _id: cid });
+    return res.status(200).send({
+      status: "Success",
+      payload: result,
+      response: "Cart deleted successfully",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      status: `Error`,
+      error: `Internal server error. Exception: ${error}`,
+    });
+  }
+});
+
 export default router;
