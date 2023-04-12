@@ -4,18 +4,22 @@ const Schema = mongoose.Schema;
 
 const messageCollection = "messages";
 
-const messageSchema = new mongoose.Schema({
-  chat: {
-    type: Schema.ObjectId,
-    ref: "Chat",
+const messageSchema = new mongoose.Schema(
+  {
+    chat: {
+      type: Schema.ObjectId,
+      ref: "Chat",
+    },
+    user: {
+      type: String,
+      required: true,
+    },
+    message: { type: String, required: true },
   },
-  user: {
-    type: String,
-    required: true,
-  },
-  message: { type: String, required: true },
-  date: Date,
-});
+  {
+    timestamps: true,
+  }
+);
 
 const messageModel = mongoose.model(messageCollection, messageSchema);
 
