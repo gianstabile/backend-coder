@@ -50,4 +50,14 @@ export default class CartManager {
       throw error;
     }
   };
+
+  deleteCart = async (id) => {
+    try {
+      const deletedCart = await cartModel.deleteOne(id);
+      return deletedCart;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
 }
