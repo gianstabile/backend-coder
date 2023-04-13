@@ -1,0 +1,67 @@
+<div class="container">
+  <div class="row">
+    <div class="jumbotron text-left border bg-warning">
+      <h3 class="p-3">{{nameShopping}} - List of products</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="container">
+      <div class="row">
+        <div class="my-4 w-100">
+          {{#if products}}
+            <div class="row">
+              {{#each products}}
+                <div class="col-2 my-4">
+                  <div class="text-center">
+                    <h5 class="h5">{{title}}</h5>
+
+                    <div class="col">
+                      <div>
+                        <img
+                          class="thumb img-thumbnail"
+                          src="{{thumbnails}}"
+                          alt="{{title}}"
+                        />
+                      </div>
+                      <div>
+                        <ul class="list-group list-group-flush">
+                          <li
+                            class="list-group-item list-group-item-action"
+                          ><strong>Description:</strong><br />
+                            {{description}}</li>
+                          <li class="list-group-item list-group-item-action">
+                            {{category}}</li>
+                          <li
+                            class="list-group-item list-group-item-action"
+                          ><strong>Code:</strong>
+                            #{{code}}</li>
+                          <li
+                            class="list-group-item list-group-item-action"
+                          ><strong>Price:</strong> ${{price}}</li>
+                          <li class="list-group-item list-group-item-action">
+                            {{stock}}
+                            unidades</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <input
+                          class="btn btn-danger my-3"
+                          type="button"
+                          value="X"
+                        />
+                      </div>
+                    </div>
+                  </div></div>
+              {{/each}}
+            </div>
+          {{else}}
+            <div class="row w-100 my-4">
+              <p>Not products found 🤷‍♂️</p>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
