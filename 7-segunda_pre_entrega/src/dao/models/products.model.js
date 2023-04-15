@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const productsCollection = "products";
 
@@ -22,6 +23,14 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
+      enum: [
+        "Gaseosas",
+        "Galletitas",
+        "Bebidas c/alcohol",
+        "Bebidas s/alcohol",
+        "Otros",
+      ],
+      default: "Otros",
     },
     stock: {
       type: Number,
@@ -37,6 +46,7 @@ const productSchema = new mongoose.Schema(
     },
     thumbnails: {
       type: Array,
+      defautl: [],
       required: true,
     },
   },
@@ -45,6 +55,7 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.plugin(mongoosePaginate);
 const productModel = mongoose.model(productsCollection, productSchema);
 
 export { productModel };
