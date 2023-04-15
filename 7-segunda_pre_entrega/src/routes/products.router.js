@@ -2,20 +2,33 @@ import { Router } from "express";
 import { uploader } from "../utils.js";
 import { productModel } from "../dao/models/products.model.js";
 import ProductManager from "../dao/dbManagers/productManager.js";
-// import ProductManager from "../dao/fileManagers/productsManager.js";
 
 const router = Router();
+const productManager = new ProductManager();
 const URL = "http://localhost:8080/images/";
 
-const productManager = new ProductManager();
-
 // GET api/products
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
-    const products = await productManager.getProducts();
-    return res.send({ status: "success", payload: products });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortBy = req.query.sortBy || "price";
+    const sortOrder = req.query.sortOrder || "asc";
+    const category = req.query.category || null;
+    const status = req.query.status || null;
+
+    const products = await productManager.getProducts(
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      category,
+      status
+    );
+
+    res.status(200).json(products);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 });
 
@@ -27,7 +40,11 @@ router.get("/:pid", async (req, res) => {
 
     if (!product) throw new Error("Product not found.");
 
-    res.status(200).send(product);
+    res.status(200).send({
+      status: "success",
+      message: "Product found!",
+      payload: product,
+    });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -36,53 +53,31 @@ router.get("/:pid", async (req, res) => {
 // POST api/products
 router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
   try {
-    const thumbnails = req.files
-      ? req.files.map((file) => `${URL}${file.filename}`)
-      : null;
-    if (!thumbnails) {
-      return res
-        .status(400)
-        .send({ status: "Error", error: "Could not load any files." });
-    }
+    const product = req.body;
+    const thumbnails = req.files;
 
-    const title = req.body.title;
-    const description = req.body.description;
-    const price = req.body.price;
-    const status = req.body.status;
-    const code = req.body.code;
-    const stock = req.body.stock;
-    const category = req.body.category;
-
-    const product = {
-      title,
-      description,
-      price,
-      status,
-      code,
-      stock,
-      category,
-      thumbnails,
-    };
-
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !status ||
-      !code ||
-      !stock ||
-      !category ||
-      !thumbnails
-    ) {
-      return res.send({ status: "error", error: "Incomplete values" });
-    } else {
-      await productModel.create(product);
-      res.status(200).send({
-        status: "Success",
-        payload: product,
-        response: "Add product successfully!",
+    if (!product) {
+      return res.status(400).send({
+        status: "Error",
+        error: "Product could not be added",
       });
     }
+
+    product.thumbnails = [];
+
+    if (thumbnails) {
+      thumbnails.forEach((file) => {
+        const thumbUrl = `http://localhost:8080/images/${file.filename}`;
+        product.thumbnails.push(thumbUrl);
+      });
+    }
+
+    await productModel.create(product);
+    return res.status(200).send({
+      status: "Success",
+      payload: product,
+      response: "Add product successfully!",
+    });
   } catch (err) {
     return res.status(500).send(next(err));
   }

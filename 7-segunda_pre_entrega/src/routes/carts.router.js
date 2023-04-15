@@ -1,8 +1,6 @@
 import { Router } from "express";
 import ProductManager from "../dao/dbManagers/productManager.js";
 import CartManager from "../dao/dbManagers/cartManager.js";
-// import CartManager from "../dao/fileManagers/cartManager.js";
-// import ProductManager from "../dao/fileManagers/productManager.js";
 
 const router = Router();
 
@@ -103,19 +101,97 @@ router.post("/:cid/products/:pid", async (req, res) => {
   }
 });
 
-// DELETE /api/carts/:cid
-router.delete("/:cid", async (req, res) => {
+// PUT /api/carts/:cid
+router.put("/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
-    const result = await cartManager.deleteCart({ _id: cid });
+    const { body } = req;
+
+    // Verificar si el carrito existe
+    const cart = await cartManager.getCartsById(cid);
+    if (!cart) {
+      return res
+        .status(404)
+        .send({ status: `Error`, error: `Cart not found.` });
+    }
+
+    const updatedCart = await cartManager.updateCart(cid, body);
+
+    return res.send({ status: "success", payload: updatedCart });
+  } catch (error) {
+    return res.send({
+      status: `Error`,
+      error: `Internal server error. Exception: ${error}`,
+    });
+  }
+});
+
+// PUT /api/carts/:cid/products/:pid
+router.put("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
+    const qty = req.body.qty;
+
+    const cart = await cartManager.getCartsById(cid);
+    const product = await productManager.getProductsById(pid);
+
+    if (!cart || !product) {
+      return res
+        .status(404)
+        .send({ status: `Error`, error: `Cart or product not found.` });
+    }
+
+    await cartManager.updateProductQuantity(cid, pid, qty);
+
+    return res
+      .status(200)
+      .send({
+        status: `Success`,
+        message: `Product quantity updated in cart.`,
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send({
+      status: `Error`,
+      error: `Internal server error. Please try again later.`,
+    });
+  }
+});
+
+// EMPTY CART /api/carts/:cid
+router.delete("/:cid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const result = await cartManager.emptyCart(cartId);
     return res.status(200).send({
       status: "Success",
       payload: result,
-      response: "Cart deleted successfully",
+      response: "Cart emptied successfully",
     });
   } catch (error) {
     return res.status(500).send({
-      status: `Error`,
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
+  }
+});
+
+// DELETE PRODUCT OF CART /api/carts/:cid/product/:pid
+router.delete("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+
+    const result = await cartManager.deleteProductToCart(cartId, productId);
+    return res.status(200).send({
+      status: "Success",
+      payload: result,
+      response: "Product deleted successfully from cart",
+    });
+  } catch (error) {
+    return res.status(500).send({
+      status: "Error",
       error: `Internal server error. Exception: ${error}`,
     });
   }
