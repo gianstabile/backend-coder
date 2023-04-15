@@ -3,12 +3,60 @@ import { productModel } from "../models/products.model.js";
 export default class ProductManager {
   constructor() {}
 
-  getProducts = async () => {
+  getProducts = async (
+    page = 1,
+    limit = 10,
+    skip = 0,
+    sortBy = "price",
+    sortOrder = "asc",
+    category = null,
+    status = null
+  ) => {
     try {
-      const products = await productModel.find().lean();
-      return products;
+      const pageSize = 10;
+      const skip = (page - 1) * pageSize;
+      const matchStage = {
+        $match: {
+          ...(category && { category: category }), // Filtrado por categoría
+          ...(status && { status: status }), // Filtrado por estado
+        },
+      };
+      const sortStage = {};
+      if (sortBy) {
+        sortStage.$sort = { [sortBy]: sortOrder === "desc" ? -1 : 1 };
+      }
+      const products = await productModel.aggregate([
+        matchStage, // Etapa de filtrado por categoría y estado
+        sortStage,
+        { $skip: skip },
+        { $limit: pageSize },
+      ]);
+
+      // Calcular el total de páginas y si hay páginas previas y siguientes
+      const totalProducts = await productModel.countDocuments(
+        matchStage.$match
+      );
+      const totalPages = Math.ceil(totalProducts / pageSize);
+      const hasPrevPage = page > 1;
+      const hasNextPage = page < totalPages;
+
+      // Construir la respuesta con la estructura requerida
+      const response = {
+        status: "success",
+        payload: products,
+        totalPages: totalPages,
+        prevPage: hasPrevPage ? page - 1 : null,
+        nextPage: hasNextPage ? page + 1 : null,
+        page: page,
+        hasPrevPage: hasPrevPage,
+        hasNextPage: hasNextPage,
+        prevLink: hasPrevPage ? `/products?page=${page - 1}` : null,
+        nextLink: hasNextPage ? `/products?page=${page + 1}` : null,
+      };
+
+      return response;
     } catch (error) {
-      console.log(error);
+      throw new Error(`Error getting products: ${error}`);
     }
   };
 
