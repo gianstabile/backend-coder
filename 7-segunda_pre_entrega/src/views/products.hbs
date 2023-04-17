@@ -14,35 +14,38 @@
               {{#each products}}
                 <div class="col-2 my-4">
                   <div class="text-center">
-                    <h5 class="h5">{{title}}</h5>
-
+                    <a href="/product/{{this._id}}">
+                      <h5 class="h5">
+                        {{this.title}}
+                      </h5>
+                    </a>
                     <div class="col">
                       <div>
                         <img
                           class="thumb img-thumbnail"
-                          src="{{thumbnails}}"
-                          alt="{{title}}"
+                          src="{{this.thumbnails}}"
+                          alt="{{this.title}}"
                         />
                       </div>
                       <div>
                         <ul class="list-group list-group-flush">
                           <li class="list-group-item list-group-item-action">
                             <strong>Description:</strong><br />
-                            {{description}}
+                            {{this.description}}
                           </li>
                           <li class="list-group-item list-group-item-action">
-                            {{category}}
+                            {{this.category}}
                           </li>
                           <li class="list-group-item list-group-item-action">
                             <strong>Code:</strong>
-                            #{{code}}
+                            #{{this.code}}
                           </li>
                           <li class="list-group-item list-group-item-action">
                             <strong>Price:</strong>
-                            ${{price}}
+                            ${{this.price}}
                           </li>
                           <li class="list-group-item list-group-item-action">
-                            {{stock}}
+                            {{this.stock}}
                             unidades
                           </li>
                         </ul>
@@ -58,6 +61,16 @@
                   </div>
                 </div>
               {{/each}}
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <a
+                href="/products?page={{prevPage}}"
+                class="btn btn-warning"
+              >Prev</a>
+              <a
+                href="/products?page={{nextPage}}"
+                class="btn btn-warning"
+              >Next</a>
             </div>
           {{else}}
             <div class="row w-100 my-4">
