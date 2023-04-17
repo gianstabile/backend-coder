@@ -5,7 +5,7 @@ import express from "express";
 import handlebars from "express-handlebars";
 import socket from "./socket.js";
 import morgan from "morgan";
-import database from "./db.js";
+import db from "./db.js";
 import config from "./config.js";
 import productsRouter from "./routes/products.router.js";
 import messagesRouter from "./routes/messages.router.js";
@@ -18,12 +18,12 @@ import __dirname from "./utils.js";
 const app = express();
 
 // Config
-const { port } = config;
+const { server } = config;
 
 // Socket.io
-const httpServer = app.listen(port, (err) => {
+const httpServer = app.listen(server.port, (err) => {
   if (err) console.log(err);
-  console.log("Server ready on port", port);
+  console.log("Server ready on port", server.port);
 });
 socket.connect(httpServer);
 
@@ -33,20 +33,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(morgan("dev"));
 
-// Handlebars
+// Configuración de vistas
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", ".hbs");
-app.engine(
-  "hbs",
-  handlebars.engine({
+app.engine(".hbs", handlebars.create({
     defaultLayout: "main",
     extname: ".hbs",
     layoutsDir: path.join(app.get("views"), "layout"),
-  })
+  }).engine
 );
 
+
 // Database
-database.connect();
+db.connect();
 
 // Routes
 app.use("/api/products", productsRouter);
@@ -54,4 +53,5 @@ app.use("/api/messages", messagesRouter);
 app.use("/api/carts", cartsRouter);
 
 app.get("/", viewsRouter);
-app.get("/realtimeproducts", viewsRouter);
+app.get("/products", viewsRouter);
+app.get("/product", viewsRouter);
