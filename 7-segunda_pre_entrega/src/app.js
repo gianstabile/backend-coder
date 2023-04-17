@@ -55,3 +55,4 @@ app.use("/api/carts", cartsRouter);
 app.get("/", viewsRouter);
 app.get("/products", viewsRouter);
 app.get("/product", viewsRouter);
+app.get("/cart", viewsRouter);
