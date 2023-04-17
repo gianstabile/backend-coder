@@ -5,14 +5,15 @@ export default class CartManager {
   constructor() {}
   getCarts = async () => {
     try {
-      const carts = await cartModel.find().lean();
-      if (carts) {
+      const carts = await cartModel.find();
+      if (carts.length > 0) {
         return carts;
       } else {
-        return [];
+        throw new Error("No carts found.");
       }
     } catch (error) {
-      throw error;
+      console.log(error);
+      throw new Error(`Internal server error. Exception: ${error}`);
     }
   };
 
@@ -24,11 +25,11 @@ export default class CartManager {
       if (cart) {
         return cart;
       } else {
-        return null;
+        throw new Error("Cart not found.");
       }
     } catch (error) {
       console.log(error);
-      throw error;
+      throw new Error(`Internal server error. Exception: ${error}`);
     }
   };
 
@@ -80,7 +81,6 @@ export default class CartManager {
       );
     }
   };
-  
 
   emptyCart = async (cartId) => {
     // Corrección en el parámetro
@@ -97,7 +97,7 @@ export default class CartManager {
     }
   };
 
-  deleteProductToCart = async (cartId, productId) => {
+  deleteProductFromCart = async (cartId, productId) => {
     try {
       const cart = await cartModel.findById(cartId); // Obtén el carrito por su ID
       if (!cart) {
