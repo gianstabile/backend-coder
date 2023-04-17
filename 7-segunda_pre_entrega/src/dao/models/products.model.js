@@ -46,7 +46,7 @@ const productSchema = new mongoose.Schema(
     },
     thumbnails: {
       type: Array,
-      defautl: [],
+      default: [],
       required: true,
     },
   },
