@@ -7,32 +7,31 @@ const router = Router();
 const productManager = new ProductManager();
 const URL = "http://localhost:8080/images/";
 
-// GET api/products
+// Ruta para listar todos los productos
 router.get("/", async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const sortBy = req.query.sortBy || "price";
-    const sortOrder = req.query.sortOrder || "asc";
+    const page = parseInt(req.query.page) || 1;
     const category = req.query.category || null;
     const status = req.query.status || null;
+    const sortBy = req.query.sortBy || "price";
 
-    const products = await productManager.getProducts(
-      page,
-      limit,
-      sortBy,
-      sortOrder,
-      category,
-      status
-    );
+    if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
+      return res.status(400).json({ error: "Invalid limit or page value." });
+    }
 
-    res.status(200).json(products);
+    const products = await productManager.getProducts(limit, page, category, status, sortBy);
+
+    res.status(200).json({
+      status: "success",
+      payload: products,
+    });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: `Internal server error. ${error.message}` });
   }
 });
 
-// GET api/products/:id
+// Ruta para listar un producto específico
 router.get("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
@@ -40,7 +39,7 @@ router.get("/:pid", async (req, res) => {
 
     if (!product) throw new Error("Product not found.");
 
-    res.status(200).send({
+    res.status(200).json({
       status: "success",
       message: "Product found!",
       payload: product,
@@ -50,7 +49,7 @@ router.get("/:pid", async (req, res) => {
   }
 });
 
-// POST api/products
+// Ruta para crear un producto
 router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
   try {
     const product = req.body;
@@ -73,17 +72,17 @@ router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
     }
 
     await productModel.create(product);
-    return res.status(200).send({
+    res.status(200).json({
       status: "Success",
       payload: product,
       response: "Add product successfully!",
     });
   } catch (err) {
-    return res.status(500).send(next(err));
+    next(err);
   }
 });
 
-// PUT api/products/:id
+// Ruta para actualizar un producto
 router.put("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
@@ -92,7 +91,7 @@ router.put("/:pid", async (req, res) => {
     const updatedProduct = await productManager.getProductsById(pid);
 
     if (!updatedProduct) {
-      throw new Error("Product not found.");
+      res.status(404).json({ error: "Product not found." });
     } else {
       await productManager.updateProduct(pid, body);
       res.status(200).json({
@@ -103,12 +102,12 @@ router.put("/:pid", async (req, res) => {
     }
   } catch (error) {
     res
-      .status(404)
+      .status(500)
       .json({ error: "Product not found or invalid body content." });
   }
 });
 
-// DELETE /api/products/id
+// Ruta para eliminar un producto
 router.delete("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
