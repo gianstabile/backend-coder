@@ -1,0 +1,33 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/index.css" />
+    <title>{{title}} - {{nameShopping}}</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="jumbotron text-left border bg-warning">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="p-3"><a href="/products">{{nameShopping}} - List of products</a></h3>
+            </div>
+            <div class="d-flex mx-5">
+              <div>
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAPlJREFUSEvNlNsVwUAQhr9UQAlUgA6ogA7wygM6oAJeeEUF6IAKUAEqQAWccZKcuCQ7SaxjXufy7b//zjpYDsfyfH4KuLlqLsAM6H1DXVCBB/DmVoB1WsinK+oCQ2AF1GwAssDZHZwHjmkgYSaLB/UUg3dASfrDAEVgmwJwAnJRAMnJKQoJIQOgbwI0gGlCgO+dadFkJzIxIRug7PWYACOgExPQdBf10WYCiFGHGICra64oVwGkaAlUlZA5IN75YVIghbLNCyXg7XvRALRPdg/I/jyFFqAU8F6mBYyBFjAB2i9jonLGV+TNCn7lr4eKyqkB1hVY9+B/AXdYBygZk/eVswAAAABJRU5ErkJggg=="/>
+              </div>
+              <h5 class="mx-2"><a href="/cart">CART</a></h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{{body}}}
+
+    </div>
+
+  </body>
+</html>
