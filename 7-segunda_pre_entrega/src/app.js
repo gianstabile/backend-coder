@@ -3,7 +3,7 @@ dotenv.config();
 
 import express from "express";
 import handlebars from "express-handlebars";
-import socket from "./socket.js";
+// import socket from "./socket.js";
 import morgan from "morgan";
 import db from "./db.js";
 import config from "./config.js";
@@ -25,7 +25,7 @@ const httpServer = app.listen(server.port, (err) => {
   if (err) console.log(err);
   console.log("Server ready on port", server.port);
 });
-socket.connect(httpServer);
+// socket.connect(httpServer);
 
 // Middlewares
 app.use(express.json());
