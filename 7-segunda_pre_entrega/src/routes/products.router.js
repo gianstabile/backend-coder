@@ -19,7 +19,7 @@ router.get("/", async (req, res, next) => {
     if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
       return res.status(400).json({ error: "Invalid limit or page value." });
     }
-
+    
     const products = await productManager.getProducts(limit, page, category, status, sortBy);
 
     res.status(200).json({
