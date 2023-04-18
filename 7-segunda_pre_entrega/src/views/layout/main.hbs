@@ -15,12 +15,22 @@
     <div class="container">
       <div class="row">
         <div class="jumbotron text-left border bg-warning">
-          <h3 class="p-3">{{nameShopping}} - List of products</h3>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="p-3"><a href="/products">{{nameShopping}} - List of products</a></h3>
+            </div>
+            <div class="d-flex mx-5">
+              <div>
+              <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAPlJREFUSEvNlNsVwUAQhr9UQAlUgA6ogA7wygM6oAJeeEUF6IAKUAEqQAWccZKcuCQ7SaxjXufy7b//zjpYDsfyfH4KuLlqLsAM6H1DXVCBB/DmVoB1WsinK+oCQ2AF1GwAssDZHZwHjmkgYSaLB/UUg3dASfrDAEVgmwJwAnJRAMnJKQoJIQOgbwI0gGlCgO+dadFkJzIxIRug7PWYACOgExPQdBf10WYCiFGHGICra64oVwGkaAlUlZA5IN75YVIghbLNCyXg7XvRALRPdg/I/jyFFqAU8F6mBYyBFjAB2i9jonLGV+TNCn7lr4eKyqkB1hVY9+B/AXdYBygZk/eVswAAAABJRU5ErkJggg=="/>
+              </div>
+              <h5 class="mx-2"><a href="/cart">CART</a></h5>
+            </div>
+          </div>
         </div>
       </div>
 
       {{{body}}}
-      
+
     </div>
 
   </body>
