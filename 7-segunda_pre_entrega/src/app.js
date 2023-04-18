@@ -36,13 +36,14 @@ app.use(morgan("dev"));
 // Configuración de vistas
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", ".hbs");
-app.engine(".hbs", handlebars.create({
+app.engine(
+  ".hbs",
+  handlebars.create({
     defaultLayout: "main",
     extname: ".hbs",
     layoutsDir: path.join(app.get("views"), "layout"),
   }).engine
 );
-
 
 // Database
 db.connect();
@@ -52,7 +53,4 @@ app.use("/api/products", productsRouter);
 app.use("/api/messages", messagesRouter);
 app.use("/api/carts", cartsRouter);
 
-app.get("/", viewsRouter);
-app.get("/products", viewsRouter);
-app.get("/product", viewsRouter);
-app.get("/cart", viewsRouter);
+app.use("/", viewsRouter);
