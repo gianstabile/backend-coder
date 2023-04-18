@@ -1,5 +1,125 @@
 <div class="row">
   <div class="container">
+    {{! FORM PRODUCTS }}
+    <div class="col-xl">
+      <div class="row">
+        <div class="container mx-auto my-2">
+          <h2 class="bg-dark text-white p-2 text-center">ADD A PRODUCT</h2>
+          <form id="productForm" enctype="multipart/form-data" method="post">
+            <div class="form-group row mt-2">
+              <div class="col">
+                <label class="form-label" for="title">Title*</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="title"
+                  id="title"
+                  autofocus
+                  required
+                />
+              </div>
+              <div class="col">
+                <label for="state">Status</label>
+                <select name="status" id="status" class="form-control">
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                  autofocus required
+                </select>
+
+              </div>
+            </div>
+            <div class="form-group row mt-2">
+              <div class="col">
+                <label class="form-label" for="price">Price*</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="price"
+                  id="price"
+                  autofocus
+                  required
+                />
+              </div>
+              <div class="col">
+                <label class="form-label" for="code">Code*</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="code"
+                  id="code"
+                  autofocus
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group row mt-2">
+              <div class="col">
+                <label class="form-label" for="stock">Stock*</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="stock"
+                  id="stock"
+                  autofocus
+                  required
+                />
+              </div>
+              <div class="col">
+                <label class="form-label" for="category">Category*</label>
+                <select class="form-select" name="category" id="category">
+                  <option value="Galletitas">Galletitas</option>
+                  <option value="Gaseosas">Gaseosas</option>
+                  <option value="Bebidas con alcohol">Bebidas con alcohol</option>
+                  <option value="Bebidas sin alcohol">Bebidas sin alcohol</option>
+                  <option value="Otros" selected>Otros</option>
+                </select>
+              </div>
+
+            </div>
+            <div class="form-group row mt-2">
+              <div class="col">
+                <label class="form-label" for="description">Description*</label>
+                <textarea
+                  class="form-control"
+                  type="text"
+                  name="description"
+                  id="description"
+                  autofocus
+                  required
+                ></textarea>
+              </div>
+            </div>
+            <div class="form-group row mt-2">
+              <div class="col">
+                <label for="thumbnails">Thumbnails*</label>
+                <input
+                  type="file"
+                  multiple="true"
+                  class="form-control"
+                  id="thumbnails"
+                  enctype="multipart/form-data"
+                  name="thumbnails"
+                  autofocus
+                  required
+                />
+              </div>
+            </div>
+            <div class="form-group row mt-3">
+              <div class="col">
+                <input
+                  type="submit"
+                  value="+ product"
+                  class="btn btn-dark w-100 font-weight-bold"
+                  id="submitForm"
+                />
+              </div>
+            </div>
+            <div class="m-3" id="result"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {{! LIST PRODUCTS }}
     <div class="row">
       <div class="my-4 w-100">
         {{#if products}}
@@ -7,11 +127,11 @@
             {{#each products}}
 
               <div class="card m-2" style="width: 15rem;">
-                <img
-                  class="card-img-top"
-                  src="{{this.thumbnails}}"
-                  alt="{{this.title}}"
-                />
+                <a href="/product/{{this._id}}"><img
+                    class="card-img-top"
+                    src="{{this.thumbnails}}"
+                    alt="{{this.title}}"
+                  /></a>
                 <div class="card-body text-center">
                   <h5 class="card-title"><a
                       href="/product/{{this._id}}"
@@ -34,7 +154,18 @@
                       unidades
                     </li>
                   </ul>
-                  <a href="#" class="btn btn-danger">Delete</a>
+                  <a
+                    href="/product/{{this._id}}"
+                    class="btn btn-success my-2"
+                  >View</a>
+                  <a
+                    href="#"
+                    id="deleteButton"
+                    class="btn btn-danger my-2"
+                    data-id="{{this._id}}"
+                    onclick="handleDeleteButtonClick(event)"
+                  >Delete</a>
+
                 </div>
               </div>
             {{/each}}
@@ -58,3 +189,4 @@
     </div>
   </div>
 </div>
+<script src="/js/products.js"></script>

@@ -28,9 +28,14 @@
       </li>
     </ul>
   </div>
-    <a
-      href="#"
-      class="btn btn-warning"
-      onclick="addToCart('{{product._id}}')"
-    >Add to Cart</a>
+  <a
+    href="#"
+    id="addButton"
+    class="btn btn-success"
+    onclick="addToCart('{{product._id}}')"
+  >Add to Cart</a>
 </div>
+<div>
+  <a href="/products?page={{prevPage}}" class="btn btn-warning">Return</a>
+</div>
+<script src="/js/product.js"></script>
