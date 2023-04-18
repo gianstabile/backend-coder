@@ -1,5 +1,12 @@
-img{
-    max-height: 200px;
-    width: auto;
-    object-fit:scale-down
+a {
+  text-decoration: none;
+  color: black;
+}
+a:hover {
+  color: #343433;
+}
+img {
+  max-height: 200px;
+  width: auto;
+  object-fit: scale-down;
 }
