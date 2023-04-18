@@ -17,10 +17,9 @@ export default class ProductManager {
         query.status = status;
       }
   
-      const products = await productModel.paginate(
-        query, { limit, page, sort: { [sortBy]: 1 } });
+      const products = await productModel.paginate({},{limit, page, category, status, sortBy, lean: true });
         
-      return products.docs;
+      return products;
     } catch (error) {
       throw new Error(`Failed to fetch products from the database. Error: ${error.message}`);
     }
