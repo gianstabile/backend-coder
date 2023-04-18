@@ -5,7 +5,7 @@ export default class CartManager {
   constructor() {}
   getCarts = async () => {
     try {
-      const carts = await cartModel.find();
+      const carts = await cartModel.find().lean();
       if (carts.length > 0) {
         return carts;
       } else {
@@ -21,7 +21,8 @@ export default class CartManager {
     try {
       const cart = await cartModel
         .findOne({ _id: id })
-        .populate("products.product");
+        .populate("products.product")
+        .lean();
       if (cart) {
         return cart;
       } else {
