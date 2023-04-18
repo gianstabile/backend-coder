@@ -5,7 +5,6 @@ import ProductManager from "../dao/dbManagers/productManager.js";
 
 const router = Router();
 const productManager = new ProductManager();
-const URL = "http://localhost:8080/images/";
 
 // Ruta para listar todos los productos
 router.get("/", async (req, res, next) => {
@@ -19,8 +18,14 @@ router.get("/", async (req, res, next) => {
     if (isNaN(limit) || isNaN(page) || limit <= 0 || page <= 0) {
       return res.status(400).json({ error: "Invalid limit or page value." });
     }
-    
-    const products = await productManager.getProducts(limit, page, category, status, sortBy);
+
+    const products = await productManager.getProducts(
+      limit,
+      page,
+      category,
+      status,
+      sortBy
+    );
 
     res.status(200).json({
       status: "success",
@@ -50,35 +55,35 @@ router.get("/:pid", async (req, res) => {
 });
 
 // Ruta para crear un producto
-router.post("/", uploader.array("thumbnails", 3), async (req, res, next) => {
+router.post("/", uploader.array("thumbnails", 5), async (req, res) => {
   try {
     const product = req.body;
-    const thumbnails = req.files;
+    const files = req.files;
 
     if (!product) {
       return res.status(400).send({
         status: "Error",
-        error: "Product could not be added",
+        error: "Error, the product could not be added",
       });
     }
 
     product.thumbnails = [];
 
-    if (thumbnails) {
-      thumbnails.forEach((file) => {
-        const thumbUrl = `http://localhost:8080/images/${file.filename}`;
-        product.thumbnails.push(thumbUrl);
+    if (files) {
+      files.forEach((file) => {
+        const imageUrl = `http://localhost:8080/images/${file.filename}`;
+        product.thumbnails.push(imageUrl);
       });
     }
 
-    await productModel.create(product);
+    await productManager.createProduct(product);
     res.status(200).json({
       status: "Success",
       payload: product,
-      response: "Add product successfully!",
+      response: "Product added successfully!",
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    console.log(error);
   }
 });
 
