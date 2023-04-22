@@ -13,7 +13,9 @@ router.get("/", async (req, res) => {
     const carts = await cartManager.getCarts();
 
     if (!carts || carts.length === 0) {
-      return res.status(404).send({ status: "Error", error: "Carts not found." });
+      return res
+        .status(404)
+        .send({ status: "Error", error: "Carts not found." });
     }
 
     return res.send({ status: "Success", payload: carts });
@@ -32,7 +34,9 @@ router.get("/:cartId", async (req, res) => {
     const cart = await cartManager.getCartsById(cartId);
 
     if (!cart) {
-      return res.status(404).send({ status: "Error", error: "Cart not found." });
+      return res
+        .status(404)
+        .send({ status: "Error", error: "Cart not found." });
     }
 
     return res.send({ status: "Success", payload: cart });
@@ -66,28 +70,38 @@ router.post("/", async (req, res) => {
 // POST /api/carts/:cartId/products/:productId
 router.post("/:cartId/products/:productId", async (req, res) => {
   try {
-    const cartId = req.params.cartId;
-    const productId = req.params.productId;
-    const qty = req.body.qty;
+    const { cartId, productId } = req.params;
+    const { qty } = req.body;
+
+    if (!qty || qty <= 0) {
+      return res.status(400).send({
+        status: "Error",
+        error: "Invalid quantity. Quantity must be greater than zero.",
+      });
+    }
 
     const cart = await cartManager.getCartsById(cartId);
     const product = await productManager.getProductsById(productId);
 
     if (!cart || !product) {
-      return res
-        .status(404)
-        .send({ status: "Error", error: "Cart or product not found." });
+      return res.status(404).send({
+        status: "Error",
+        error: "Cart or product not found.",
+      });
     }
 
-    if (!qty) {
-      await cartManager.addProductToCart(cartId, productId);
+    const productInCart = await cartManager.getProductInCart(cartId, productId);
+    if (productInCart) {
+      const newQty = productInCart.quantity + qty;
+      await cartManager.updateProductQuantity(cartId, productId, newQty);
     } else {
       await cartManager.addProductToCart(cartId, productId, qty);
     }
 
-    return res
-      .status(200)
-      .send({ status: "Success", message: "Product added to cart." });
+    return res.status(200).send({
+      status: "Success",
+      message: "Product added to cart.",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).send({
@@ -96,7 +110,6 @@ router.post("/:cartId/products/:productId", async (req, res) => {
     });
   }
 });
-
 
 // PUT /api/carts/:cid
 router.put("/:cid", async (req, res) => {
@@ -154,7 +167,6 @@ router.put("/:cid/products/:pid", async (req, res) => {
   }
 });
 
-
 // EMPTY CART /api/carts/:cid
 router.delete("/:cid", async (req, res) => {
   try {
@@ -194,6 +206,5 @@ router.delete("/:cid/products/:pid", async (req, res) => {
     });
   }
 });
-
 
 export default router;
