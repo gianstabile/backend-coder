@@ -1,0 +1,47 @@
+<section class="vh-50" style="background-color: #eee;">
+  <div class="container py-5 h-75">
+    <div
+      class="px-4 py-5 px-md-5 text-center text-lg-start mx-auto w-100 d-flex justify-content-center"
+    >
+
+      <div class="col-lg-6 mb-5 mb-lg-0">
+        <div class="card">
+          <div class="card-body py-5 px-md-5">
+            <form id="loginForm" action="/api/sessions/login" method="POST">
+
+              <!-- Email input -->
+              <div class="form-outline mb-4">
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  name="email"
+                />
+                <label class="form-label" for="email">Email address</label>
+              </div>
+
+              <!-- Password input -->
+              <div class="form-outline mb-4">
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  name="password"
+                />
+                <label class="form-label" for="password">Password</label>
+              </div>
+
+              <!-- Submit button -->
+              <button type="submit" class="btn btn-warning btn-block mb-4">
+                Sign in
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+<script src="/js/login.js"></script>
