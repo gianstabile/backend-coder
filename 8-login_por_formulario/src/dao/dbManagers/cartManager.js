@@ -1,5 +1,4 @@
 import { cartModel } from "../models/carts.model.js";
-import { productModel } from "../models/products.model.js";
 
 export default class CartManager {
   constructor() {}
@@ -28,6 +27,22 @@ export default class CartManager {
       } else {
         throw new Error("Cart not found.");
       }
+    } catch (error) {
+      console.log(error);
+      throw new Error(`Internal server error. Exception: ${error}`);
+    }
+  };
+
+  getProductInCart = async (cartId, productId) => {
+    try {
+      const cart = await cartModel.findOne({ _id: cartId });
+      if (!cart) {
+        throw new Error(`Cart not found with ID ${cartId}`);
+      }
+      const productInCart = cart.products.find(
+        (product) => product.product.toString() === productId
+      );
+      return productInCart || null; // Devuelve null si no se encuentra el producto
     } catch (error) {
       console.log(error);
       throw new Error(`Internal server error. Exception: ${error}`);
@@ -73,7 +88,7 @@ export default class CartManager {
     try {
       const updatedCart = await cartModel.updateOne(
         { _id: cartId, "products.product": productId },
-        { $inc: { "products.$.quantity": quantity } }
+        { $set: { "products.$.quantity": quantity } }
       );
       return updatedCart;
     } catch (error) {
