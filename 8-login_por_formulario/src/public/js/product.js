@@ -10,16 +10,13 @@ async function addToCart(productId) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify({ qty: 1 }),
       }
     );
 
     if (addToCartProduct.ok) {
       toastr.success("Product added successfully!");
       console.log("Product successfully added.");
-      setTimeout(() => {
-        location.href = "/products";
-      }, 1500);
     } else {
       toastr.error("Error adding the product.");
       console.error("Error adding the product");
@@ -28,3 +25,4 @@ async function addToCart(productId) {
     console.error("Error adding the product:", err);
   }
 }
+
