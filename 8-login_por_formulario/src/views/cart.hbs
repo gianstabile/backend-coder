@@ -18,7 +18,9 @@
               alt="Thumbnail"
               style="width:5rem"
             /></td>
-          <td>{{product.title}}</td>
+          <td><a href="/product/{{product._id}}">
+            {{product.title}}</td>
+          </a>
           <td>{{product.price}}</td>
           <td>{{quantity}} </td>
           <td><button onclick="deleteProduct('{{product._id}}')">X</button></td>
@@ -33,7 +35,10 @@
     </div>
   </div>
 {{/if}}
-<div>
-  <a href="/products?page={{prevPage}}" class="btn btn-warning">Return</a>
+<div class="d-flex justify-content-end p-2 m-3">
+  <div>
+    <a href="/products?page={{prevPage}}" class="btn btn-warning">Return</a>
+    <a href="#" class="btn btn-danger" onclick="emptyCart()">Empty cart</a>
+  </div>
 </div>
 <script src="/js/cart.js"></script>
