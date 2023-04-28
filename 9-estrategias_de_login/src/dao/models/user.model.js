@@ -10,11 +10,12 @@ const userSchema = new mongoose.Schema({
   last_name: String,
   email: {
     type: String,
-    required: true,
+    // required: true,
+    unique: true, 
   },
   password: {
     type: String,
-    required: true,
+    // required: true,
   },
   thumbnails: Array,
   role: {
@@ -23,6 +24,7 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
 });
+
 
 const userModel = mongoose.model(userCollection, userSchema);
 
