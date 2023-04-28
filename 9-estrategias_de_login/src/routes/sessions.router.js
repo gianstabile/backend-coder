@@ -62,7 +62,6 @@ router.post(
         thumbnails: req.user.thumbnails,
       };
 
-      // res.redirect("/products");
       res.json({
         status: "success",
         message: "Logged In",

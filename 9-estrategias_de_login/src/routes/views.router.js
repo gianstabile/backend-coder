@@ -119,7 +119,7 @@ router.get("/profile", checkLogin, (req, res) => {
       thumbnails: thumbnails,
       style: "./css/index.css",
       sectionPage: "Profile",
-      sessionUser: req.session.user.name,
+      sessionUser: req.session.user,
       nameShopping: "DOMINGOU",
     });
   } catch (error) {
