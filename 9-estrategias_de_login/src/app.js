@@ -49,8 +49,8 @@ app.use(
         useUnifiedTopology: true,
       },
     }),
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     secret: config.session.secret,
     cookie: { maxAge: 600000 },
   })
