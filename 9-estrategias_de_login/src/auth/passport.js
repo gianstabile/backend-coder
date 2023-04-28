@@ -69,18 +69,18 @@ const initializePassport = () => {
       {
         clientID: github.clientId,
         clientSecret: github.clientSecret,
-        callbackURL: github.callbackUrl,
+        callbackUrl: github.callbackUrl,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           let user = await userModel.findOne({ email: profile._json.email });
           if (!user) {
             let newUser = {
-              first_name: profile._json.name,
+              first_name: profile.displayName,
               last_name: "",
-              age: 18,
               email: profile._json.email,
               password: "",
+              thumbnails: profile._json.avatar_url,
             };
 
             let result = await userModel.create(newUser);
@@ -100,8 +100,12 @@ const initializePassport = () => {
   });
 
   passport.deserializeUser(async (id, done) => {
-    let user = await userModel.findById(id);
-    done(null, user);
+    try {
+      let user = await userModel.findById(id);
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
   });
 };
 
