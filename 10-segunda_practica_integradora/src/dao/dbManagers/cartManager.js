@@ -157,8 +157,15 @@ export default class CartManager {
         throw new Error(`Product not found in cart with ID ${cartId}`);
       }
 
-      // Elimina el producto del arreglo de productos del carrito
-      cart.products.splice(productIndex, 1);
+      // Reduce la cantidad del producto en 1
+      const product = cart.products[productIndex];
+      product.quantity -= 1;
+
+      // Si la cantidad del producto es 0, elimina el producto del arreglo de productos del carrito
+      if (product.quantity === 0) {
+        cart.products.splice(productIndex, 1);
+      }
+
       await cart.save(); // Guarda el carrito actualizado
 
       return cart;
