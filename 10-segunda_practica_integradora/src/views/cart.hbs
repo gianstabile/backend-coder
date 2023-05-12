@@ -10,7 +10,6 @@
         <th scope="col">Delete</th>
       </tr>
     </thead>
-    {{cartId}}
     <tbody>
       {{#each products}}
         <tr class="align-middle">
@@ -24,9 +23,13 @@
           </td>
           <td>{{product.price}}</td>
           <td>{{quantity}} </td>
-          <td><button
-              onclick="deleteProduct('{{cartId}}','{{product._id}}')"
-            >X</button></td>
+          <td>
+            <button
+              href="#"
+              class="btn btn-dark text-light"
+              onclick="deleteProduct('{{cartId}}', '{{product._id}}')"
+            >X</button>
+          </td>
         </tr>
       {{/each}}
 
