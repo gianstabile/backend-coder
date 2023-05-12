@@ -54,7 +54,11 @@ router.get("/product/:productId", async (req, res, next) => {
       username = req.session.user.name;
     }
 
-    let cartId = req.session.user.cart;
+    // obtener cartId
+    let cartId = null;
+    if (req.session.user && req.session.user.cart) {
+      cartId = req.session.user.cart;
+    }
 
     res.render("product", {
       style: "./css/index.css",
@@ -73,7 +77,7 @@ router.get("/product/:productId", async (req, res, next) => {
 // CARTS
 router.get("/cart", async (req, res) => {
   try {
-    let cartId = req.session.user.cart;
+    let cartId = req.session.user && req.session.user.cart;
     const cart = await cartManager.getCartsById(cartId);
 
     let username = null;
@@ -81,13 +85,17 @@ router.get("/cart", async (req, res) => {
       username = req.session.user.name;
     }
 
+    const products = cart.products.map((product) => {
+      return { ...product, cartId: cart._id };
+    });
+
     res.render("cart", {
       sectionPage: "Cart",
       nameShopping: "DOMINGOU",
       sessionUser: username,
       cart,
-      cartId,
-      products: cart.products,
+      cartId: cart._id,
+      products,
       product: cart.products[0],
     });
   } catch (error) {

@@ -68,10 +68,10 @@ router.post("/", async (req, res) => {
 });
 
 // POST /api/carts/:cartId/products/:productId
-router.post("/:cartId/products/:productId", async (req, res) => {
+router.post("/:cid/products/:pid", async (req, res) => {
   try {
-    const cartId = req.params.cartId;
-    const productId = req.params.productId;
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
     const quantity = req.body.qty;
 
     function isInvalidQuantity(qty) {
@@ -87,6 +87,8 @@ router.post("/:cartId/products/:productId", async (req, res) => {
 
     const cart = await cartManager.getCartsById(cartId);
     const product = await productManager.getProductsById(productId);
+
+    product.cartId = cartId;
 
     if (!cart || !product) {
       return res.status(404).send({
@@ -153,12 +155,12 @@ router.put("/:cid", async (req, res) => {
 // PUT /api/carts/:cid/products/:pid
 router.put("/:cid/products/:pid", async (req, res) => {
   try {
-    const cid = req.params.cid;
-    const pid = req.params.pid;
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
     const qty = req.body.qty;
 
-    const cart = await cartManager.getCartsById(cid);
-    const product = await productManager.getProductsById(pid);
+    const cart = await cartManager.getCartsById(cartId);
+    const product = await productManager.getProductsById(productId);
 
     if (!cart || !product) {
       return res
@@ -166,7 +168,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
         .send({ status: `Error`, error: `Cart or product not found.` });
     }
 
-    await cartManager.updateProductQuantity(cid, pid, qty);
+    await cartManager.updateProductQuantity(cartId, productId, qty);
 
     return res.send({
       status: `Success`,
@@ -207,6 +209,7 @@ router.delete("/:cid/products/:pid", async (req, res) => {
     const productId = req.params.pid;
 
     const result = await cartManager.deleteProductFromCart(cartId, productId);
+
     return res.send({
       status: "Success",
       payload: result,
