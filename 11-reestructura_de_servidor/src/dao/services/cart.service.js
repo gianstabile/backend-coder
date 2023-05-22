@@ -86,15 +86,17 @@ class CartService {
         throw new Error(`Cart not found with ID ${cartId}`);
       }
 
-      const productInCart = await cartRepository.getProductInCart(
-        cartId,
-        productId
-      );
+      const productInCart = await cartRepository.getProductInCart(cartId,productId);
+      console.log(productInCart)
       if (!productInCart) {
         throw new Error(`Product not found in cart with ID ${cartId}`);
       }
 
-      await cartRepository.deleteProductFromCart(cartId, productId);
+      if(productInCart.quantity === 1){
+        await cartRepository.deleteProductFromCart(cartId, productId);
+      } else {
+        await cartRepository.updateProductQuantity(cartId, productId, productInCart.quantity - 1);
+      }
 
       const updatedCart = await cartRepository.getCartById(cartId);
 
