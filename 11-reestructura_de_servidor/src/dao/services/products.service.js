@@ -7,7 +7,7 @@ class ProductService {
 
   async getProducts(limit, page, category, status, sortBy) {
     try {
-      return await productRepository.getProducts(
+      return await this.productRepository.getProducts(
         limit,
         page,
         category,
@@ -21,7 +21,7 @@ class ProductService {
 
   async getProductById(id) {
     try {
-      return await productRepository.getProductsById(id);
+      return await this.productRepository.getProductById(id);
     } catch (error) {
       throw new Error(`Error getting product by ID. Error: ${error}`);
     }
@@ -29,7 +29,7 @@ class ProductService {
 
   async createProduct(product) {
     try {
-      return await productRepository.createProduct(product);
+      return await this.productRepository.createProduct(product);
     } catch (error) {
       throw new Error(`Error creating product. Error: ${error}`);
     }
@@ -37,7 +37,7 @@ class ProductService {
 
   async updateProduct(pid, body) {
     try {
-      return await productRepository.updateProduct(pid, body);
+      return await this.productRepository.updateProduct(pid, body);
     } catch (error) {
       throw new Error(`Error updating product. Error: ${error}`);
     }
@@ -45,7 +45,7 @@ class ProductService {
 
   async deleteProduct(pid) {
     try {
-      return await productRepository.deleteProduct(pid);
+      return await this.productRepository.deleteProduct(pid);
     } catch (error) {
       throw new Error(`Error deleting product. Error: ${error}`);
     }

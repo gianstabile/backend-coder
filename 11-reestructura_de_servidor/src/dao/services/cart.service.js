@@ -1,105 +1,112 @@
 import { cartRepository } from "../repositories/cart.repository.js";
+import { productRepository } from "../repositories/products.repository.js";
 
 class CartService {
-  constructor() {}
+  async getCarts() {
+    return await cartRepository.getCarts();
+  }
 
-  getCarts = async () => {
-    try {
-      return await cartRepository.getCarts();
-    } catch (error) {
-      throw new Error(`Failed to get carts: ${error.message}`);
+  async getCartById(cid) {
+    return await cartRepository.getCartById(cid);
+  }
+
+  async getCartByUserId(userId) {
+    return await cartRepository.getCartByUserId(userId);
+  }
+
+  async getProductInCart(cid, pid) {
+    return await cartRepository.getProductInCart(cid, pid);
+  }
+
+  async createCart(userId) {
+    return await cartRepository.createCart(userId);
+  }
+
+  async addCart(cart) {
+    return await cartRepository.addCart(cart);
+  }
+
+  async addProductToCart(cid, pid, quantity) {
+    const cart = await cartRepository.getCartById(cid);
+    const product = await productRepository.getProductById(pid);
+
+    if (!cart || !product) {
+      throw new Error("Cart or product not found.");
     }
-  };
 
-  getCartById = async (id) => {
-    try {
-      return await cartRepository.getCartById(id);
-    } catch (error) {
-      throw new Error(`Failed to get cart by ID: ${error.message}`);
+    const productInCart = await cartRepository.getProductInCart(cid, pid);
+    if (productInCart) {
+      const updatedQuantity = productInCart.quantity + quantity;
+      await cartRepository.updateProductQuantity(cid, pid, updatedQuantity);
+    } else {
+      await cartRepository.addProductToCart(cid, pid, quantity);
     }
-  };
 
-  getCartByUserId = async (userId) => {
-    try {
-      return await cartRepository.getCartByUserId(userId);
-    } catch (error) {
-      throw new Error(`Failed to get cart by user ID: ${error.message}`);
-    }
-  };
+    return await cartRepository.getCartById(cid);
+  }
 
-  getProductInCart = async (cartId, productId) => {
+  async updateCart(cartId, cartData) {
     try {
-      return await cartRepository.getProductInCart(cartId, productId);
-    } catch (error) {
-      throw new Error(`Failed to get product in cart: ${error.message}`);
-    }
-  };
+      const cart = await cartRepository.getCartById(cartId);
+      if (!cart) {
+        throw new Error(`Cart not found with ID ${cartId}`);
+      }
 
-  createCart = async (userId) => {
-    try {
-      return await cartRepository.createCart(userId);
-    } catch (error) {
-      throw new Error(`Failed to create cart: ${error.message}`);
-    }
-  };
-
-  addCart = async (cart) => {
-    try {
-      return await cartRepository.addCart(cart);
-    } catch (error) {
-      throw new Error(`Failed to add cart: ${error.message}`);
-    }
-  };
-
-  addProductToCart = async (cartId, productId, quantity) => {
-    try {
-      return await cartRepository.addProductToCart(
-        cartId,
-        productId,
-        quantity
-      );
-    } catch (error) {
-      throw new Error(`Failed to add product to cart: ${error.message}`);
-    }
-  };
-
-  updateCart = async (cartId, body) => {
-    try {
-      return await cartRepository.updateCart(cartId, body);
+      const updatedCart = await cartRepository.updateCart(cartId, cartData);
+      return updatedCart;
     } catch (error) {
       throw new Error(`Failed to update cart: ${error.message}`);
     }
-  };
+  }
 
-  updateProductQuantity = async (cartId, productId, quantity) => {
+  async updateProductQuantity(cid, pid, quantity) {
+    const cart = await cartRepository.getCartById(cid);
+    const product = await productRepository.getProductById(pid);
+
+    if (!cart || !product) {
+      throw new Error("Cart or product not found.");
+    }
+
+    await cartRepository.updateProductQuantity(cid, pid, quantity);
+  }
+
+  async emptyCart(cid) {
+    const cart = await cartRepository.getCartById(cid);
+    if (!cart) {
+      throw new Error("Cart not found.");
+    }
+
+    return await cartRepository.emptyCart(cid);
+  }
+
+  async deleteProductFromCart(cartId, productId) {
     try {
-      return await cartRepository.updateProductQuantity(
+      const cart = await cartRepository.getCartById(cartId);
+      if (!cart) {
+        throw new Error(`Cart not found with ID ${cartId}`);
+      }
+
+      const productInCart = await cartRepository.getProductInCart(
         cartId,
-        productId,
-        quantity
+        productId
       );
-    } catch (error) {
-      throw new Error(
-        `Failed to update product quantity in cart: ${error.message}`
+
+      if (!productInCart) {
+        throw new Error(`Product not found in cart with ID ${cartId}`);
+      }
+
+      cart.products = cart.products.filter(
+        (product) => product.product.toString() !== productId
       );
-    }
-  };
 
-  emptyCart = async (cartId) => {
-    try {
-      return await cartRepository.emptyCart(cartId);
-    } catch (error) {
-      throw new Error(`Failed to empty cart: ${error.message}`);
-    }
-  };
+      // Guardar el carrito actualizado
+      await cartRepository.updateCart(cartId, cart);
 
-  deleteProductFromCart = async (cartId, productId) => {
-    try {
-      return await cartRepository.deleteProductFromCart(cartId, productId);
+      return cart;
     } catch (error) {
       throw new Error(`Failed to delete product from cart: ${error.message}`);
     }
-  };
+  }
 }
 
 export const cartService = new CartService();
