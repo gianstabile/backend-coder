@@ -90,19 +90,15 @@ class CartService {
         cartId,
         productId
       );
-
       if (!productInCart) {
         throw new Error(`Product not found in cart with ID ${cartId}`);
       }
 
-      cart.products = cart.products.filter(
-        (product) => product.product.toString() !== productId
-      );
+      await cartRepository.deleteProductFromCart(cartId, productId);
 
-      // Guardar el carrito actualizado
-      await cartRepository.updateCart(cartId, cart);
+      const updatedCart = await cartRepository.getCartById(cartId);
 
-      return cart;
+      return updatedCart;
     } catch (error) {
       throw new Error(`Failed to delete product from cart: ${error.message}`);
     }
