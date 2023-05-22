@@ -1,8 +1,6 @@
 import { cartModel } from "../models/cart.model.js";
 
 class CartRepository {
-  constructor() {}
-
   async getCarts() {
     try {
       return await cartModel.find();
@@ -11,15 +9,20 @@ class CartRepository {
     }
   }
 
-  async getCartById(id) {
+  async getCartById(cid) {
     try {
       const cart = await cartModel
-        .findOne({ _id: id })
+        .findOne({ _id: cid })
         .populate("products.product")
         .lean();
-      return cart;
+      if (cart) {
+        return cart;
+      } else {
+        throw new Error("Cart not found.");
+      }
     } catch (error) {
-      throw new Error(`Failed to get cart by ID: ${error.message}`);
+      console.log(error);
+      throw new Error(`Internal server error. Exception: ${error}`);
     }
   }
 
@@ -30,22 +33,24 @@ class CartRepository {
         .populate("products.product");
       return cart;
     } catch (error) {
-      throw new Error(`Failed to get cart by user ID: ${error.message}`);
+      console.log(error);
+      throw new Error("Error getting cart by user ID.");
     }
   }
 
-  async getProductInCart(cartId, productId) {
+  async getProductInCart(cid, pid) {
     try {
-      const cart = await cartModel.findOne({ _id: cartId });
+      const cart = await cartModel.findOne({ _id: cid });
       if (!cart) {
-        throw new Error(`Cart not found with ID ${cartId}`);
+        throw new Error(`Cart not found with ID ${cid}`);
       }
       const productInCart = cart.products.find(
-        (product) => product.product.toString() === productId
+        (product) => product.product.toString() === pid
       );
-      return productInCart || null; // Devuelve null si no se encuentra el producto
+      return productInCart || null;
     } catch (error) {
-      throw new Error(`Failed to get product in cart: ${error.message}`);
+      console.log(error);
+      throw new Error(`Internal server error. Exception: ${error}`);
     }
   }
 
@@ -57,7 +62,8 @@ class CartRepository {
       await cart.save();
       return cart;
     } catch (error) {
-      throw new Error(`Failed to create cart: ${error.message}`);
+      console.log(error);
+      throw new Error(`Internal server error. Exception: ${error}`);
     }
   }
 
@@ -70,37 +76,46 @@ class CartRepository {
     }
   }
 
-  async addProductToCart(cartId, productId, quantity) {
-    try {
-      const updatedCart = await cartModel.updateOne(
-        { _id: cartId },
-        { $push: { products: [{ product: productId, quantity }] } }
-      );
-      return updatedCart;
-    } catch (error) {
-      throw new Error(`Failed to add product to cart: ${error.message}`);
-    }
+  async addProductToCart(cid, pid, quantity) {
+    return await cartModel.findByIdAndUpdate(
+      cid,
+      {
+        $push: {
+          products: { product: pid, quantity: quantity },
+        },
+      },
+      { new: true }
+    );
   }
 
-  async updateCart(cartId, body) {
+  async updateCart(cid, body) {
     try {
-      const updatedCart = await cartModel.updateOne(
-        { _id: cartId },
-        { $set: { products: body.products } }
-      );
+      const updatedCart = await cartModel.findByIdAndUpdate(cid, body, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updatedCart) {
+        throw new Error(`Cart not found with ID ${cid}`);
+      }
+
       return updatedCart;
     } catch (error) {
       throw new Error(`Failed to update cart: ${error.message}`);
     }
   }
 
-  async updateProductQuantity(cartId, productId, quantity) {
+  async updateProductQuantity(cid, pid, quantity) {
     try {
-      const updatedCart = await cartModel.updateOne(
-        { _id: cartId, "products.product": productId },
-        { $set: { "products.$.quantity": quantity } }
+      const cart = await cartModel.findOneAndUpdate(
+        { _id: cid, "products.product": pid },
+        { $set: { "products.$.quantity": quantity } },
+        { new: true }
       );
-      return updatedCart;
+      if (!cart) {
+        throw new Error(`Cart not found with ID ${cid}`);
+      }
+      return cart;
     } catch (error) {
       throw new Error(
         `Failed to update product quantity in cart: ${error.message}`
@@ -108,46 +123,27 @@ class CartRepository {
     }
   }
 
-  async emptyCart(cartId) {
-    try {
-      const updatedCart = await cartModel.updateOne(
-        { _id: cartId },
-        { $set: { products: [] } } // Establece el arreglo de productos como vacío
-      );
-      return updatedCart;
-    } catch (error) {
-      throw new Error(`Failed to empty cart: ${error.message}`);
-    }
+  async emptyCart(cid) {
+    return await cartModel.findByIdAndUpdate(
+      cid,
+      { products: [] },
+      { new: true }
+    );
   }
 
-  async deleteProductFromCart(cartId, productId) {
+  async deleteProductFromCart(cid, pid) {
     try {
-      const cart = await cartModel.findById(cartId); // Obtén el carrito por su ID
-      if (!cart) {
-        throw new Error(`Cart not found with ID ${cartId}`);
-      }
-
-      // Busca el índice del producto en el arreglo de productos del carrito
-      const productIndex = cart.products.findIndex(
-        (product) => product.product.toString() === productId
+      const updatedCart = await cartModel.findByIdAndUpdate(
+        cid,
+        { $pull: { products: { _id: pid } } },
+        { new: true, runValidators: true }
       );
 
-      if (productIndex === -1) {
-        throw new Error(`Product not found in cart with ID ${cartId}`);
+      if (!updatedCart) {
+        throw new Error(`Product not found in cart with ID ${cid}`);
       }
 
-      // Reduce la cantidad del producto en 1
-      const product = cart.products[productIndex];
-      product.quantity -= 1;
-
-      // Si la cantidad del producto es 0, elimina el producto del arreglo de productos del carrito
-      if (product.quantity === 0) {
-        cart.products.splice(productIndex, 1);
-      }
-
-      await cart.save(); // Guarda el carrito actualizado
-
-      return cart;
+      return updatedCart;
     } catch (error) {
       throw new Error(`Failed to delete product from cart: ${error.message}`);
     }

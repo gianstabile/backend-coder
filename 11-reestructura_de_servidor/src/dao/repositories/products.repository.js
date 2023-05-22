@@ -6,19 +6,17 @@ class ProductRepository {
   }
 
   async getProducts(limit, page, category, status, sortBy) {
+    const query = {};
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
     try {
-      const query = {};
-
-      // Filtro category
-      if (category) {
-        query.category = category;
-      }
-
-      // Filtro status
-      if (status) {
-        query.status = status;
-      }
-
       const products = await this.model.paginate(query, {
         limit,
         page,
@@ -63,7 +61,7 @@ class ProductRepository {
 
   async deleteProduct(pid) {
     try {
-      const deletedProduct = await this.model.deleteOne({ _id: pid });
+      const deletedProduct = await this.model.findByIdAndDelete(pid);
       return deletedProduct;
     } catch (error) {
       throw new Error(`Error deleting product: ${error}`);
