@@ -133,17 +133,18 @@ class CartRepository {
 
   async deleteProductFromCart(cid, pid) {
     try {
-      const updatedCart = await cartModel.findByIdAndUpdate(
-        cid,
-        { $pull: { products: { _id: pid } } },
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedCart) {
-        throw new Error(`Product not found in cart with ID ${cid}`);
+      const cart = await cartModel.findById(cid);
+      if (!cart) {
+        throw new Error(`Cart not found with ID ${cid}`);
       }
 
-      return updatedCart;
+      cart.products = cart.products.filter(
+        (product) => product.product.toString() !== pid
+      );
+
+      await cart.save();
+
+      return cart;
     } catch (error) {
       throw new Error(`Failed to delete product from cart: ${error.message}`);
     }
