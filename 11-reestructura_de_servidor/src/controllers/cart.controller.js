@@ -1,21 +1,42 @@
 import { cartService } from "../dao/services/cart.service.js";
+import { productService } from "../dao/services/products.service.js";
 
 export async function getCarts(req, res) {
   try {
     const carts = await cartService.getCarts();
-    res.json(carts);
+
+    if (!carts || carts.length === 0) {
+      return res
+        .status(404)
+        .send({ status: "Error", error: "Carts not found." });
+    }
+
+    return res.send({ status: "Success", payload: carts });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
   }
 }
 
 export async function getCartById(req, res) {
-  const { id } = req.params;
   try {
-    const cart = await cartService.getCartById(id);
-    res.json(cart);
+    const { cid } = req.params;
+    const cart = await cartService.getCartById(cid);
+
+    if (!cart) {
+      return res
+        .status(404)
+        .send({ status: "Error", error: "Cart not found." });
+    }
+
+    return res.send({ status: "Success", payload: cart });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
   }
 }
 
@@ -30,9 +51,9 @@ export async function getCartByUserId(req, res) {
 }
 
 export async function getProductInCart(req, res) {
-  const { cartId, productId } = req.params;
+  const { cid, pid } = req.params;
   try {
-    const productInCart = await cartService.getProductInCart(cartId, productId);
+    const productInCart = await cartService.getProductInCart(cid, pid);
     res.status(200).json(productInCart);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -43,9 +64,16 @@ export async function createCart(req, res) {
   const { userId } = req.body;
   try {
     const cart = await cartService.createCart(userId);
-    res.status(201).json(cart);
+    return res.status(201).send({
+      status: "Success",
+      payload: cart,
+      message: "Cart created successfully.",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
   }
 }
 
@@ -60,60 +88,150 @@ export async function addCart(req, res) {
 }
 
 export async function addProductToCart(req, res) {
-  const { cartId, productId, quantity } = req.body;
+  const cid = req.params.cid;
+  const pid = req.params.pid;
+  const quantity = req.body.qty;
+
   try {
-    const updatedCart = await cartService.addProductToCart(
-      cartId,
-      productId,
-      quantity
-    );
-    res.status(200).json(updatedCart);
+    if (!cid) {
+      return res.status(400).send({
+        status: "Error",
+        error: "Invalid cart ID.",
+      });
+    }
+
+    if (!quantity || quantity <= 0) {
+      return res.status(400).send({
+        status: "Error",
+        error: "Invalid quantity. Quantity must be greater than zero.",
+      });
+    }
+
+    const cart = await cartService.getCartById(cid);
+    const product = await productService.getProductById(pid);
+
+    if (!cart || !product) {
+      return res.status(404).send({
+        status: "Error",
+        error: "Cart or product not found.",
+      });
+    }
+
+    const productInCart = await cartService.getProductInCart(cid, pid);
+    if (productInCart) {
+      const updatedQuantity = productInCart.quantity + quantity;
+      await cartService.updateProductQuantity(cid, pid, updatedQuantity);
+    } else {
+      await cartService.addProductToCart(cid, pid, quantity);
+    }
+
+    const updatedCart = await cartService.getCartById(cid);
+    const numProductsInCart = updatedCart.products.length;
+
+    return res.status(200).send({
+      status: "Success",
+      message: `${quantity} product(s) added to cart.`,
+      cart: updatedCart,
+      numProductsInCart: numProductsInCart,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).send({
+      status: "Error",
+      error: "Internal server error. Please try again later.",
+    });
   }
 }
 
 export async function updateCart(req, res) {
-  const { cartId } = req.params;
-  const { body } = req;
   try {
-    const updatedCart = await cartService.updateCart(cartId, body);
-    res.status(200).json(updatedCart);
+    const { cid } = req.params;
+    const cartData = req.body;
+
+    const cart = await cartService.getCartById(cid);
+    if (!cart) {
+      return res
+        .status(404)
+        .send({ status: "Error", error: "Cart not found." });
+    }
+
+    const updatedCart = await cartService.updateCart(cid, cartData);
+
+    return res.send({ status: "Success", payload: updatedCart });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
   }
 }
 
 export async function updateProductQuantity(req, res) {
-  const { cartId, productId, quantity } = req.body;
   try {
-    const updatedCart = await cartService.updateProductQuantity(
-      cartId,
-      productId,
-      quantity
-    );
-    res.status(200).json(updatedCart);
+    const { cid, pid } = req.params;
+    const quantity = req.body.qty;
+
+    const cart = await cartService.getCartById(cid);
+    const product = await productService.getProductById(pid);
+
+    if (!cart || !product) {
+      return res.status(404).send({
+        status: "Error",
+        error: "Cart or product not found.",
+      });
+    }
+
+    await cartService.updateProductQuantity(cid, pid, quantity);
+
+    return res.send({
+      status: "Success",
+      message: "Product quantity updated in cart.",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).send({
+      status: "Error",
+      error: "Internal server error. Please try again later.",
+    });
   }
 }
 
 export async function emptyCart(req, res) {
-  const { cartId } = req.params;
   try {
-    const updatedCart = await cartService.emptyCart(cartId);
-    res.status(200).json(updatedCart);
+    const { cid } = req.params;
+    const result = await cartService.emptyCart(cid);
+
+    return res.send({
+      status: "Success",
+      payload: result,
+      response: "Cart emptied successfully",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error}`,
+    });
   }
 }
 
 export async function deleteProductFromCart(req, res) {
-  const { cartId, productId } = req.params;
   try {
-    const cart = await cartService.deleteProductFromCart(cartId, productId);
-    res.status(200).json(cart);
+    const cid = req.params.cid;
+    const pid = req.params.pid;
+
+    const updatedCart = await cartService.deleteProductFromCart(cid, pid);
+
+    return res.send({
+      status: "Success",
+      payload: updatedCart,
+      response: "Product deleted successfully from cart",
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return res.status(500).send({
+      status: "Error",
+      error: `Internal server error. Exception: ${error.message}`,
+    });
   }
 }
