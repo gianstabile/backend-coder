@@ -17,15 +17,10 @@ function checkSession(req, res, next) {
 
 function isAdmin(req, res, next) {
   if (req.session?.user) {
-    if (
-      req.session.user.email === "adminCoder@coder.com" &&
-      req.session.user.role === "admin"
-    ) {
+    if (req.session.user.email === "adminCoder@coder.com" && req.session.user.role === "admin") {
       return next();
     } else {
-      return res
-        .status(401)
-        .send({ status: "error", message: "User not authorized" });
+      return res.status(401).send({ status: "error", message: "User not authorized" });
     }
   } else {
     return res.redirect("/login");
