@@ -1,25 +1,26 @@
 import usersDao from "../db/users.dao.js";
 
-export default class usersRepository {
-  constructor(){
-    this.userDao = usersDao()
+export default class UsersRepository {
+  constructor() {
+    this.userDao = usersDao();
   }
+
   getUserById = async (id) => {
     try {
       const user = await this.userDao.getUserById(id);
       return user;
     } catch (error) {
-      console.log();
+      console.log(error);
       return null;
     }
   };
 
   createUser = async (user) => {
     try {
-      const user = await this.userDao.createUser(user);
-      return user;
+      const createdUser = await this.userDao.createUser(user);
+      return createdUser;
     } catch (error) {
-      console.log();
+      console.log(error);
       return null;
     }
   };
