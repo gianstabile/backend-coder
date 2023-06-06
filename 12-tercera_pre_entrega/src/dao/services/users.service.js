@@ -2,8 +2,9 @@ import usersRepository from "../repositories/users.repository.js";
 
 export default class UsersService {
   constructor() {
-    this.usersRepository = usersRepository();
+    this.usersRepository = new usersRepository();
   }
+
   getUserById = async (id) => {
     try {
       const user = await this.usersRepository.getUserById(id);
