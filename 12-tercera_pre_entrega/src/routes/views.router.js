@@ -13,6 +13,7 @@ router.get("/register", checkLogged, viewsController.getRegister);
 router.get("/profile", checkLogin, viewsController.getProfile);
 router.get("/logout", viewsController.logout);
 router.get("/recovery", viewsController.getRecovery);
+router.get("/current", viewsController.getCurrentUser);
 router.get("/purchase", viewsController.showPurchaseOrder);
 
 export default router;
