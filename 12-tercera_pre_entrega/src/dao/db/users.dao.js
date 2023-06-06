@@ -1,6 +1,6 @@
 import userModel from "../models/user.model.js";
 
-export default class usersDao {
+export default class UsersDao {
   constructor() {}
 
   getUserById = async (id) => {
@@ -8,7 +8,7 @@ export default class usersDao {
       const user = await userModel.findOne({ _id: id });
       return user;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error retrieving user by ID: " + error.message);
     }
   };
 
@@ -17,7 +17,7 @@ export default class usersDao {
       const result = await userModel.create(user);
       return result;
     } catch (error) {
-      console.log(error);
+      throw new Error("Error creating user: " + error.message);
     }
   };
 }
