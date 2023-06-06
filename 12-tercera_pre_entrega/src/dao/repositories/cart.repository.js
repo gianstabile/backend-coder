@@ -39,13 +39,16 @@ class CartRepository {
       if (!cart) {
         throw new Error(`Cart not found with ID ${cid}`);
       }
-      const productInCart = cart.products.find((product) => product.product.toString() === pid);
+      const productInCart = cart.products.find((product) => {
+        return product.product && product.product.toString() === pid;
+      });
       return productInCart || null;
     } catch (error) {
       console.log(error);
       throw error;
     }
   }
+  
 
   async createCart(userId) {
     try {
