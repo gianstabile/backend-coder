@@ -32,9 +32,9 @@ class OrderService {
     }
   }
 
-  async resolveOrder(id, order) {
+  async resolveOrder(id, updatedOrder) {
     try {
-      return await this.orderRepository.resolveOrder({ _id: id });
+      return await this.orderRepository.resolveOrder(id, updatedOrder);
     } catch (error) {
       console.error(error);
       throw new Error("Error resolving order.");
