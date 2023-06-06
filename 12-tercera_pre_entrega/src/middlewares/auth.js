@@ -27,13 +27,12 @@ function isAdmin(req, res, next) {
   }
 }
 
-function authorizeRole(allowRoles) {
-  return (req, res) => {
-    const { role } = req.session.user;
-
-    if (!allowRoles.includes(role)) {
-      return res.status(403).send({ status: "error", error: "unauthorized" });
+function authorizeRole(role) {
+  return (req, res, next) => {
+    if (!req.session.user || req.session.user.role !== role) {
+      return res.status(403).json({ error: "Unauthorized", message: "You are not authorized to access this resource." });
     }
+    next();
   };
 }
 
