@@ -4,8 +4,8 @@ import orderService from "../dao/services/order.service.js";
 
 export const getOrders = async (req, res) => {
   try {
-    let result = await orderService.getOrders();
-    res.json({ status: "success", result });
+    const orders = await orderService.getOrders();
+    res.json({ status: "success", orders });
   } catch (error) {
     res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
@@ -14,8 +14,8 @@ export const getOrders = async (req, res) => {
 export const getOrderById = async (req, res) => {
   try {
     const { oid } = req.params;
-    let order = await orderService.getOrderById(oid);
-    res.json({ status: "success", result: order });
+    const order = await orderService.getOrderById(oid);
+    res.json({ status: "success", order });
   } catch (error) {
     res.status(500).json({ status: "error", error: "Internal Server Error" });
   }
@@ -30,9 +30,9 @@ export const createOrder = async (req, res) => {
     const actualOrders = resultCart.products.filter((product) => products.includes(product._id));
     const sum = actualOrders.reduce((acc, prev) => acc + prev.price, 0);
 
-    let order = {
+    const order = {
       amount: sum,
-      purchaser: resultUser._id,
+      purchaser: resultUser.name,
     };
 
     const createdOrder = await orderService.createOrder(order);
@@ -47,7 +47,7 @@ export const createOrder = async (req, res) => {
 export const resolveOrder = async (req, res) => {
   try {
     const { resolve } = req.query;
-    let order = await orderService.getOrderById(req.params.oid);
+    const order = await orderService.getOrderById(req.params.oid);
     order.status = resolve;
     await orderService.resolveOrder(order._id, order);
     res.json({ status: "success", result: "Order resolved" });
