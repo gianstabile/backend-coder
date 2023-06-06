@@ -1,4 +1,5 @@
 import ViewsService from "../dao/services/views.service.js";
+import GetCurrentUserDTO from "../dto/currentuser.dto.js";
 
 const viewsService = new ViewsService();
 
@@ -162,13 +163,37 @@ export default class ViewsController {
     }
   }
 
+  async getCurrentUser(req, res) {
+    try {
+      if (!req.session.user) {
+        return res.status(401).json({ error: "User not authenticated" });
+      }
+
+      const currentUser = new GetCurrentUserDTO(req.session.user);
+
+      res.render("current", { style: "./css/index.css", sectionPage: "Current", sessionUser: currentUser, nameShopping: "DOMINGOU" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
   async showPurchaseOrder(req, res) {
     try {
       const { notPurchased, createdOrder } = req.body;
-      console.log("estos son los no comprados: "+ notPurchased);
-      console.log("estos son los comprados: "+createdOrder);
 
-      res.render("order", { sectionPage: "Cart", nameShopping: "DOMINGOU", notPurchased, createdOrder });
+      let username = null;
+      if (req.session.user && req.session.user.name) {
+        username = req.session.user.name;
+      }
+
+      res.render("order", {
+        sectionPage: "Cart",
+        nameShopping: "DOMINGOU",
+        notPurchased: notPurchased,
+        createdOrder: createdOrder,
+        sessionUser: username,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).send({ status: "error", error: "Internal Server Error" });
