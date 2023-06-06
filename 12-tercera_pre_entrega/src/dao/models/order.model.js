@@ -6,8 +6,8 @@ const orderSchema = new mongoose.Schema({
   code: { type: String, default: uuidv4, unique: true, required: true },
   purchase_datetime: { type: Date, default: Date.now },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
-  purchaser: String,
-  ammount: Number,
+  amount: { type: Number, required: true },
+  purchaser: { type: String, required: true },
 });
 
 const orderModel = mongoose.model(collection, orderSchema);
