@@ -45,7 +45,7 @@ app.use(
       mongoUrl: config.database.dbUrl,
       ttl: 15,
       options: {
-        userNewParser: true,
+        useNewUrlParser: true,
         useUnifiedTopology: true,
       },
     }),
@@ -76,9 +76,9 @@ db.connect();
 
 // Routes
 app.use("/api/sessions", sessionsRouter);
-app.use("/api/products", authorizeRole(["admin"]), productsRouter);
+app.use("/api/products", authorizeRole("admin"), productsRouter);
 app.use("/api/orders", ordersRouter);
-app.use("/api/carts", cartsRouter);
+app.use("/api/carts", authorizeRole("user"), cartsRouter);
 app.use("/", viewsRouter);
 
 // Socket
