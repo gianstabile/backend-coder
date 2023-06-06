@@ -107,7 +107,9 @@
                     </li>
                   </ul>
                   {{! buttons }}
-                  <a href="#" id="deleteButton" class="btn btn-danger my-2" data-id="{{this._id}}" onclick="handleDeleteButtonClick(event)">Delete</a>
+                  {{#if isAdmin}}
+                    <a href="#" id="deleteButton" class="btn btn-danger my-2" data-id="{{this._id}}" onclick="handleDeleteButtonClick(event)">Delete</a>
+                  {{/if}}
                   <a href="/product/{{this._id}}" class="btn btn-success my-2">View</a>
 
                 </div>
