@@ -1,8 +1,6 @@
 import { cartService } from "../dao/services/cart.service.js";
 import { productService } from "../dao/services/products.service.js";
-import orderService from "../dao/services/order.service.js";
-
-const order = new orderService();
+import { orderService } from "../dao/services/orders.service.js";
 
 export async function getCarts(req, res) {
   try {
@@ -235,46 +233,14 @@ export async function deleteProductFromCart(req, res) {
 
 export async function purchaseCart(req, res) {
   try {
-    const cartId = req.params.cid;
+    const cartId = req.params.cid; 
     const cart = await cartService.getCartById(cartId);
 
-    if (!cart || cart.products.length === 0) {
+    if (!cart && cart.error) {
       return res.status(404).json({ error: "Cart not found or empty" });
     }
 
-    const productsNotPurchased = [];
-
-    for (const item of cart.products) {
-      const productId = item._id;
-      const quantity = item.quantity;
-
-      const product = await productService.getProductById(productId);
-
-      if (!product || product.stock < quantity) {
-        productsNotPurchased.push(item);
-        continue;
-      }
-
-      product.stock -= quantity;
-      await productService.updateProduct(productId, product);
-
-      await cartService.deleteProductFromCart(cartId, productId);
-    }
-
-    const orderData = {
-      userId: cart.userId,
-      products: cart.products,
-    };
-
-    const createdOrder = await order.createOrder(orderData);
-
-    await cartService.updateCart(cartId, { products: productsNotPurchased });
-
-    if (productsNotPurchased.length > 0) {
-      return res.json({ notPurchased: productsNotPurchased });
-    }
-
-    return res.json({ status: "success", message: "Purchase completed", createdOrder });
+    return res.json({ status: "success", message: "Purchase completed", payload: cart });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });
