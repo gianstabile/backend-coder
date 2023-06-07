@@ -1,3 +1,4 @@
+import { orderService } from "../dao/services/orders.service.js";
 import ViewsService from "../dao/services/views.service.js";
 import GetCurrentUserDTO from "../dto/currentuser.dto.js";
 
@@ -28,7 +29,7 @@ export default class ViewsController {
         hasNextPage,
         prevPage,
         nextPage,
-        isAdmin: req.session.user && req.session.user.role === "admin",
+        isAdmin: req.session.user && req.session.user.role == "admin",
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -178,21 +179,16 @@ export default class ViewsController {
     }
   }
 
-  async showPurchaseOrder(req, res) {
+  async purchase(req, res) {
     try {
-      const { notPurchased, createdOrder } = req.body;
+      const { cartId } = req.params;
+      const result = await orderService.createOrder(cartId);
 
-      let username = null;
-      if (req.session.user && req.session.user.name) {
-        username = req.session.user.name;
-      }
-
-      res.render("order", {
+      res.render("purchase", {
+        order: JSON.parse(JSON.stringify(result)),
         sectionPage: "Cart",
         nameShopping: "DOMINGOU",
-        notPurchased: notPurchased,
-        createdOrder: createdOrder,
-        sessionUser: username,
+        user: req.session.user,
       });
     } catch (error) {
       console.log(error);
