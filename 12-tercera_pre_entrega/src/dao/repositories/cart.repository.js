@@ -48,7 +48,6 @@ class CartRepository {
       throw error;
     }
   }
-  
 
   async createCart(userId) {
     try {
