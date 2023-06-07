@@ -14,6 +14,6 @@ router.get("/profile", checkLogin, viewsController.getProfile);
 router.get("/logout", viewsController.logout);
 router.get("/recovery", viewsController.getRecovery);
 router.get("/current", viewsController.getCurrentUser);
-router.get("/purchase", viewsController.showPurchaseOrder);
+router.get("/purchase", viewsController.purchase);
 
 export default router;
