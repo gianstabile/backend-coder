@@ -14,7 +14,6 @@ import config from "./config/config.js";
 import __dirname from "./utils.js";
 import initializePassport from "./auth/passport.js";
 import path from "path";
-import { authorizeRole } from "./middlewares/auth.js";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import ordersRouter from "./routes/orders.router.js";
@@ -76,9 +75,9 @@ db.connect();
 
 // Routes
 app.use("/api/sessions", sessionsRouter);
-app.use("/api/products", authorizeRole("admin"), productsRouter);
+app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
-app.use("/api/carts", authorizeRole("user"), cartsRouter);
+app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
 
 // Socket
