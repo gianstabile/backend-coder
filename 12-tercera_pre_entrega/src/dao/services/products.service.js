@@ -7,13 +7,7 @@ class ProductService {
 
   async getProducts(limit, page, category, status, sortBy) {
     try {
-      return await this.productRepository.getProducts(
-        limit,
-        page,
-        category,
-        status,
-        sortBy
-      );
+      return await this.productRepository.getProducts(limit, page, category, status, sortBy);
     } catch (error) {
       throw new Error(`Failed to fetch products. Error: ${error.message}`);
     }
