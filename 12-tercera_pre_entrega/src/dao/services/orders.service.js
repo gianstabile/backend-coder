@@ -3,7 +3,6 @@ import { cartRepository } from "../repositories/cart.repository.js";
 import UsersRepository from "../repositories/users.repository.js";
 import { productRepository } from "../repositories/products.repository.js";
 import { v4 as uuid4 } from "uuid";
-import CreateOrderDto from "../../dto/createorder.dto.js";
 
 const userRepository = new UsersRepository();
 
@@ -45,25 +44,23 @@ class OrderService {
         throw new Error("User does not exist.");
       }
 
-      let totalAmmount = 0;
+      let totalAmount = 0;
       const code = uuid4();
-      const purchase_datetime = Date.now();
-      let products = [];
-      let unsuccessfulProducts = [];
+      const purchaseDatetime = Date.now();
+      const products = [];
+      const unsuccessfulProducts = [];
 
       for (const item of cart.products) {
-        const product = await this.productRepository.getProductById(item.product._id);
+        const product = await productRepository.getProductById(item.product._id);
         const quantity = item.quantity;
         const price = item.product.price;
 
         if (!product) {
-          // si producto no existe, agregarlo a los productos no exitosos
           unsuccessfulProducts.push(item.product);
           continue;
         }
 
         if (product.stock < quantity) {
-          // Agregar productos si  no hay suficiente stock
           unsuccessfulProducts.push({
             product: item.product,
             quantity: quantity,
@@ -71,57 +68,56 @@ class OrderService {
           continue;
         }
 
-        // Restar cantidad del stock del producto
         product.stock -= quantity;
-        await product.save();
+        await productRepository.updateProduct(product._id, { stock: product.stock });
 
-        // Agregar producto a la lista de productos comprados
         products.push({
           product: product,
           quantity: quantity,
         });
 
-        totalAmmount += price * quantity;
+        totalAmount += price * quantity;
       }
+
       const purchaser = user.email;
 
       const order = {
-        code,
-        purchase_datetime,
+        code: code,
+        purchaseDatetime: purchaseDatetime,
         successProducts: products,
         unsuccessfulProducts: unsuccessfulProducts,
-        totalAmmount,
-        purchaser,
+        totalAmount: totalAmount,
+        purchaser: purchaser,
       };
 
-      if (ticket.unsuccessfulProducts.length > 0) {
-        return {
-          error: `Products without enough stock to make the purchase.`,
+      if (unsuccessfulProducts.length > 0) {
+        throw {
+          error: "Products without enough stock to make the purchase.",
           unsuccessfulProducts: unsuccessfulProducts,
         };
       }
 
-      if (ticket.successProducts.length <= 0) {
-        return {
-          error: `The cart is empty.`,
+      if (products.length === 0) {
+        throw {
+          error: "The cart is empty.",
         };
       }
 
-      const createdOrder = await this.orderRepository.createOrder(order);
+      const createdOrder = await orderRepository.createOrder(order);
+
       if (unsuccessfulProducts.length > 0) {
         const unsuccessfulProductIds = unsuccessfulProducts.map((item) => item.product._id.toString());
-
         cart.products = cart.products.filter((item) => !unsuccessfulProductIds.includes(item.product.toString()));
-        await this.userRepository.saveUser(user);
+        await userRepository.saveUser(user);
       } else {
         cart.products = [];
-        await this.cartRepository.saveCart(cart);
+        await cartRepository.updateCart(cartId, cart);
       }
 
       if (createdOrder) {
         return order;
       } else {
-        return { error: `Could not create order.` };
+        throw new Error("Could not create order.");
       }
     } catch (error) {
       console.error(error);
