@@ -1,0 +1,27 @@
+<h1 class="my-4">{{title}}</h1>
+<h2>Purchase completed!</h2>
+
+{{#if notPurchased}}
+  <h4>Some products could not be purchased:</h4>
+  <ul>
+    {{#each notPurchased}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+{{else}}
+  <h4>All products were successfully purchased!</h4>
+{{/if}}
+
+<h5>Details of order:</h5>
+<ul>
+  {{#each createdOrder.products}}
+    <li>Product: {{this.product}}</li>
+    <li>Quantity: {{this.quantity}}</li>
+  {{/each}}
+</ul>
+<div class="d-flex justify-content-end p-2 m-3">
+  <div>
+    <a href="/products?page={{prevPage}}" class="btn btn-warning">Return</a>
+  </div>
+</div>
+<script src="/js/cart.js"></script>
