@@ -29,7 +29,9 @@ function isAdmin(req, res, next) {
 
 function authorizeRole(role) {
   return (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== role) {
+    const currentUser = req.session.user;
+    const hasPermission = role.some((role) => currentUser.role === role);
+    if (!hasPermission) {
       return res.status(403).json({ error: "Unauthorized", message: "You are not authorized to access this resource." });
     }
     next();
