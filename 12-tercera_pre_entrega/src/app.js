@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import socket from "./socket.js";
+import nodemailer from "nodemailer";
 import handlebars from "express-handlebars";
 import morgan from "morgan";
 import MongoStore from "connect-mongo";
@@ -13,7 +14,7 @@ import db from "./config/db.js";
 import config from "./config/config.js";
 import __dirname from "./utils.js";
 import initializePassport from "./auth/passport.js";
-import path from "path";
+import path, { dirname } from "path";
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import ordersRouter from "./routes/orders.router.js";
@@ -24,12 +25,22 @@ import sessionsRouter from "./routes/sessions.router.js";
 const app = express();
 
 // Config
-const { server } = config;
+const { server, mailConfig } = config;
 
 // Server
 const httpServer = app.listen(server.port, (err) => {
   if (err) console.log(err);
   console.log("Server ready on port", server.port);
+});
+
+// Nodemailer
+const transport = nodemailer.createTransport({
+  service: mailConfig.mailService,
+  port: mailConfig.mailPort,
+  auth: {
+    user: mailConfig.mailName,
+    pass: mailConfig.mailPass,
+  },
 });
 
 // Middlewares
@@ -79,6 +90,20 @@ app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
+app.get("/mail", async (req, res) => {
+  let result = await transport.sendMail({
+    from: process.env.USER_MAIL,
+    to: "gianjstabile@gmail.com",
+    subject: "Probando Nodemailer desde App Coder!",
+    html: `
+    <div>
+      <h1>This is a second test!</h1>
+    </div>
+    `,
+    attachments: [],
+  });
+  res.send({ status: "success", result: "Email sent." });
+});
 
 // Socket
 socket.connect(httpServer);
