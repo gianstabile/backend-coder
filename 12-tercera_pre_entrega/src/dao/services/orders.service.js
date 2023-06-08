@@ -110,8 +110,7 @@ class OrderService {
         cart.products = cart.products.filter((item) => !unsuccessfulProductIds.includes(item.product.toString()));
         await userRepository.saveUser(user);
       } else {
-        cart.products = [];
-        await cartRepository.updateCart(cartId, cart);
+        await cartRepository.emptyCart(cartId);
       }
 
       if (createdOrder) {
