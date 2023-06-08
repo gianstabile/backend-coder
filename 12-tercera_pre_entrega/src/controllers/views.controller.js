@@ -10,7 +10,7 @@ export default class ViewsController {
       const { limit = 10, page = 1, category, status, sortBy } = req.query;
 
       let username = null;
-      if (req.session.user && req.session.user.name) {
+      if (req.session.user || req.session.user.name) {
         username = req.session.user.name;
       }
 
@@ -29,7 +29,7 @@ export default class ViewsController {
         hasNextPage,
         prevPage,
         nextPage,
-        isAdmin: req.session.user && req.session.user.role == "admin",
+        isAdmin: req.session.user.role === "admin",
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -54,10 +54,10 @@ export default class ViewsController {
 
       res.render("product", {
         style: "./css/index.css",
+        nameShopping: "DOMINGOU",
         sectionPage: product.title,
         sessionUser: username,
         title: product.title,
-        nameShopping: "DOMINGOU",
         product,
         cartId,
       });
@@ -127,9 +127,9 @@ export default class ViewsController {
         user,
         thumbnails,
         style: "./css/index.css",
+        nameShopping: "DOMINGOU",
         sectionPage: "Profile",
         sessionUser: req.session.user,
-        nameShopping: "DOMINGOU",
       });
     } catch (error) {
       console.error(error);
