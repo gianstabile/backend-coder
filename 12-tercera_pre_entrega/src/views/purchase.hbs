@@ -1,10 +1,10 @@
 <h1 class="my-4">{{title}}</h1>
 <h2>Purchase completed!</h2>
 
-{{#if notPurchased}}
+{{#if order.error}}
   <h4>Some products could not be purchased:</h4>
   <ul>
-    {{#each notPurchased}}
+    {{#each order.unsuccessfulProducts}}
       <li>{{this}}</li>
     {{/each}}
   </ul>
@@ -14,11 +14,17 @@
 
 <h5>Details of order:</h5>
 <ul>
-  {{#each createdOrder.products}}
-    <li>Product: {{this.product}}</li>
-    <li>Quantity: {{this.quantity}}</li>
+  {{#each order.successProducts}}
+    <li>Product: {{product.title}}</li>
+    <li>Quantity: {{quantity}}</li>
   {{/each}}
 </ul>
+<div class="my-3">
+  <div class="d-flex flex-column align-items-end">
+    <h3 class="text-muted">Total amount:</h3>
+    <h2>${{order.totalAmount}}</h2>
+  </div>
+</div>
 <div class="d-flex justify-content-end p-2 m-3">
   <div>
     <a href="/products?page={{prevPage}}" class="btn btn-warning">Return</a>
