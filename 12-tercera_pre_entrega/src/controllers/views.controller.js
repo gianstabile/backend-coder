@@ -30,6 +30,7 @@ export default class ViewsController {
         prevPage,
         nextPage,
         isAdmin: req.session.user.role === "admin",
+        isNotAdmin: req.session.user.role === "user",
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -60,6 +61,8 @@ export default class ViewsController {
         title: product.title,
         product,
         cartId,
+        isAdmin: req.session.user.role === "admin",
+        isNotAdmin: req.session.user.role === "user",
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -88,6 +91,8 @@ export default class ViewsController {
         cartId: cart._id,
         products,
         product: cart.products[0],
+        isAdmin: req.session.user.role === "admin",
+        isNotAdmin: req.session.user.role === "user",
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -130,6 +135,8 @@ export default class ViewsController {
         nameShopping: "DOMINGOU",
         sectionPage: "Profile",
         sessionUser: req.session.user,
+        isAdmin: req.session.user.role === "admin",
+        isNotAdmin: req.session.user.role === "user",
       });
     } catch (error) {
       console.error(error);
@@ -189,6 +196,8 @@ export default class ViewsController {
         sectionPage: "Purchase",
         nameShopping: "DOMINGOU",
         sessionUser: req.session.user,
+        isAdmin: req.session.user.role === "admin",
+        isNotAdmin: req.session.user.role === "user",
       });
     } catch (error) {
       console.log(error);
