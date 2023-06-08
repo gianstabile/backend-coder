@@ -188,7 +188,7 @@ export default class ViewsController {
         order: JSON.parse(JSON.stringify(result)),
         sectionPage: "Purchase",
         nameShopping: "DOMINGOU",
-        user: req.session.user,
+        sessionUser: req.session.user,
       });
     } catch (error) {
       console.log(error);
