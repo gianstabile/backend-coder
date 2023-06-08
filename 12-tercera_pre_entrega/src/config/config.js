@@ -20,6 +20,12 @@ const config = {
     appId: process.env.APP_ID,
     callbackUrl: process.env.CALLBACK_URL,
   },
+  mailConfig: {
+    mailName: process.env.USER_MAIL,
+    mailPass: process.env.PASS_MAIL,
+    mailPort: process.env.PORT_MAIL,
+    mailService: process.env.SERVICE_MAIL,
+  },
 };
 
 export default config;
