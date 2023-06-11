@@ -236,11 +236,27 @@ export async function purchaseCart(req, res) {
     const cartId = req.params.cid;
     const cart = await cartService.getCartById(cartId);
 
-    if (!cart) {
+    if (!cart || cart.products.length === 0) {
       return res.status(404).json({ error: "Cart not found or empty" });
     }
 
-    return res.json({ status: "success", message: "Purchase completed", cart });
+    let message = "";
+    const productsOutStock = [];
+    for (const item of cart.products) {
+      const product = await productService.getProductById(item.product._id);
+      if (product.stock < item.quantity) {
+        productsOutStock.push(item);
+        message = "Some products are out of stock";
+      }
+    }
+    message = "Purchase completed";
+
+    return res.json({
+      status: "success",
+      message,
+      cart,
+      productsOutStock,
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal Server Error" });

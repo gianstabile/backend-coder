@@ -1,4 +1,5 @@
 import { orderService } from "../dao/services/orders.service.js";
+import { cartService } from "../dao/services/cart.service.js";
 import ViewsService from "../dao/services/views.service.js";
 import GetCurrentUserDTO from "../dto/currentuser.dto.js";
 
@@ -125,11 +126,11 @@ export default class ViewsController {
 
   async getProfile(req, res) {
     try {
-      let user = req.session.user;
-      const thumbnails = user.thumbnails ? user.thumbnails : [];
+      const user = new GetCurrentUserDTO(req.session.user);
+      const thumbnails = req.session.user.thumbnails ? req.session.user.thumbnails : [];
 
       res.render("profile", {
-        user,
+        user: user,
         thumbnails,
         style: "./css/index.css",
         nameShopping: "DOMINGOU",
@@ -188,11 +189,11 @@ export default class ViewsController {
 
   async purchase(req, res) {
     try {
-      let cartId = req.session.user.cart;
-      const result = await orderService.createOrder(cartId);
+      const cartId = req.session.user.cart;
+      const order = await orderService.createOrder(cartId);
 
       res.render("purchase", {
-        order: JSON.parse(JSON.stringify(result)),
+        order,
         sectionPage: "Purchase",
         nameShopping: "DOMINGOU",
         sessionUser: req.session.user,
