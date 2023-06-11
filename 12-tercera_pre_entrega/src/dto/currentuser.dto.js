@@ -1,7 +1,8 @@
 export default class GetCurrentUserDTO {
-  constructor({ id, username, email }) {
-    this.id = id;
-    this.username = username;
-    this.email = email;
+  constructor(user) {
+    this.name = user.name;
+    this.email = user.email;
+    this.rol = user.rol;
+    this.cart = user.cart;
   }
 }
