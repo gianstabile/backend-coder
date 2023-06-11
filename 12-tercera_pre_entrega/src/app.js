@@ -41,6 +41,9 @@ const transport = nodemailer.createTransport({
     user: mailConfig.mailName,
     pass: mailConfig.mailPass,
   },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 // Middlewares
@@ -91,9 +94,10 @@ app.use("/api/orders", ordersRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
 app.get("/mail", async (req, res) => {
+  const userLoggedEmail = req.user.email;
   let result = await transport.sendMail({
     from: process.env.USER_MAIL,
-    to: "gianjstabile@gmail.com",
+    to: userLoggedEmail,
     subject: "Probando Nodemailer desde App Coder!",
     html: `
     <div>
