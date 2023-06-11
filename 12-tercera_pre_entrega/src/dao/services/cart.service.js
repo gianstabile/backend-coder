@@ -93,8 +93,10 @@ export default class CartService {
 
       if (productInCart.quantity === 1) {
         await cartRepository.deleteProductFromCart(cartId, productId);
-      } else {
+      } else if (productInCart.quantity > 1) {
         await cartRepository.updateProductQuantity(cartId, productId, productInCart.quantity - 1);
+      } else {
+        throw new Error(`Invalid quantity for product in cart: ${productInCart.quantity}`);
       }
 
       const updatedCart = await cartRepository.getCartById(cartId);

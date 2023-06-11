@@ -47,77 +47,59 @@ class OrderService {
       let totalAmount = 0;
       const code = uuid4();
       const purchaseDatetime = Date.now();
-      const products = [];
-      const unsuccessfulProducts = [];
+      let successProducts = [];
+      let productsOutStock = [];
 
       for (const item of cart.products) {
         const product = await productRepository.getProductById(item.product._id);
         const quantity = item.quantity;
         const price = item.product.price;
 
-        if (!product) {
-          unsuccessfulProducts.push(item.product);
-          continue;
-        }
-
         if (product.stock < quantity) {
-          unsuccessfulProducts.push({
+          productsOutStock.push({
             product: item.product,
             quantity: quantity,
           });
-          continue;
+        } else {
+          product.stock -= quantity;
+          successProducts.push({
+            product: product,
+            quantity: quantity,
+          });
+          await productRepository.updateProduct(product._id, product);
+          totalAmount += price * quantity;
         }
-
-        product.stock -= quantity;
-        await productRepository.updateProduct(product._id, { stock: product.stock });
-
-        products.push({
-          product: product,
-          quantity: quantity,
-        });
-
-        totalAmount += price * quantity;
       }
 
       const purchaser = user.email;
 
+      let orderSuccess = true;
+
+      if (productsOutStock.length > 0) {
+        orderSuccess = false;
+      }
+
       const order = {
         code: code,
-        purchaseDatetime: purchaseDatetime,
-        successProducts: products,
-        unsuccessfulProducts: unsuccessfulProducts,
-        totalAmount: totalAmount,
-        purchaser: purchaser,
+        purchaseDatetime,
+        successProducts,
+        productsOutStock,
+        totalAmount,
+        purchaser,
       };
 
-      if (unsuccessfulProducts.length > 0) {
-        throw {
-          error: "Products without enough stock to make the purchase.",
-          unsuccessfulProducts: unsuccessfulProducts,
-        };
-      }
+      await orderRepository.createOrder(order);
 
-      if (products.length === 0) {
-        throw {
-          error: "The cart is empty.",
-        };
-      }
-
-      const createdOrder = await orderRepository.createOrder(order);
-
-      if (unsuccessfulProducts.length > 0) {
-        const unsuccessfulProductIds = unsuccessfulProducts.map((item) => item.product._id.toString());
-        cart.products = cart.products.filter((item) => !unsuccessfulProductIds.includes(item.product.toString()));
-        await userRepository.saveUser(user);
+      if (orderSuccess) {
+        const productsOutStockIds = productsOutStock.map((item) => item.product._id.toString());
+        const updatedProducts = cart.products.filter((item) => !productsOutStockIds.includes(item.product._id.toString()));
+        cart.products = updatedProducts;
+        await cartRepository.emptyCart(cart);
       } else {
-        await cartRepository.emptyCart(cartId);
+        await cartRepository.updateCart(cart, productsOutStock);
       }
 
-      if (createdOrder) {
-        return order;
-      } else {
-        throw new Error("Could not create order.");
-      }
+      return order;
     } catch (error) {
       console.error(error);
       throw new Error("Error creating order.");
