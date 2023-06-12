@@ -13,7 +13,7 @@ import session from "express-session";
 import db from "./config/db.js";
 import config from "./config/config.js";
 import __dirname from "./utils.js";
-import errorHandlerMiddleware from "./middlewares/errorHandlerMiddleware.js";
+import errorHandlerMiddleware from "./errors/error.middleware.js";
 import initializePassport from "./auth/passport.js";
 import path, { dirname } from "path";
 import productsRouter from "./routes/products.router.js";
@@ -69,7 +69,6 @@ app.use(
     cookie: { maxAge: 1600000 },
   })
 );
-app.use(errorHandlerMiddleware);
 
 // Passport
 initializePassport();
@@ -116,3 +115,6 @@ app.get("/mail", async (req, res) => {
 
 // Socket
 socket.connect(httpServer);
+
+// Middleware error
+app.use(errorHandlerMiddleware);
