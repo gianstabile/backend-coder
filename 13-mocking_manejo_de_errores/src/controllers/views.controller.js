@@ -1,5 +1,6 @@
+import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { orderService } from "../dao/services/orders.service.js";
-import { cartService } from "../dao/services/cart.service.js";
 import ViewsService from "../dao/services/views.service.js";
 import GetCurrentUserDTO from "../dto/currentuser.dto.js";
 import { faker } from "@faker-js/faker";

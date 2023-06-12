@@ -1,4 +1,3 @@
-import generateError from "../utils/errorHandler.js";
 import passport from "passport";
 import userModel from "../dao/models/user.model.js";
 import { createHash } from "../utils.js";

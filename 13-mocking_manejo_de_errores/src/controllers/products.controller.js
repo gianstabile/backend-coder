@@ -1,30 +1,43 @@
-import generateError from "../utils/errorHandler.js";
+import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { productService } from "../dao/services/products.service.js";
 
 export default class ProductController {
-  getProducts = async (req, res) => {
+  getProducts = async (req, res, next) => {
     try {
       const { limit, page, category, status, sortBy } = req.query;
       const products = await productService.getProducts(limit, page, category, status, sortBy);
       res.json(products);
     } catch (error) {
-      const customError = generateError("PRODUCTS_FETCH_FAILED", error.message);
-      res.status(500).json({ error: customError.message });
+      next(
+        new CustomError({
+          name: errorsName.PRODUCTS_FETCH_FAILED,
+          message: errorsMessage.PRODUCTS_FETCH_FAILED,
+          cause: errorsCause.PRODUCTS_FETCH_FAILED,
+          originalError: error.message,
+        })
+      );
     }
   };
 
-  getProductById = async (req, res) => {
+  getProductById = async (req, res, next) => {
     try {
       const { id } = req.params;
       const product = await productService.getProductById(id);
       res.json(product);
     } catch (error) {
-      const customError = generateError("PRODUCT_FETCH_FAILED", error.message);
-      res.status(500).json({ error: customError.message });
+      next(
+        new CustomError({
+          name: errorsName.PRODUCT_FETCH_FAILED,
+          message: errorsMessage.PRODUCT_FETCH_FAILED,
+          cause: errorsCause.PRODUCT_FETCH_FAILED,
+          originalError: error.message,
+        })
+      );
     }
   };
 
-  createProduct = async (req, res) => {
+  createProduct = async (req, res, next) => {
     try {
       const product = req.body;
       const files = req.files;
@@ -41,44 +54,74 @@ export default class ProductController {
       const createdProduct = await productService.createProduct(product);
       res.json(createdProduct);
     } catch (error) {
-      const customError = generateError("PRODUCT_CREATION_FAILED", "Product creation failed.");
-      res.status(500).json({ error: customError.message });
+      next(
+        new CustomError({
+          name: errorsName.PRODUCT_CREATION_FAILED,
+          message: errorsMessage.PRODUCT_CREATION_FAILED,
+          cause: errorsCause.PRODUCT_CREATION_FAILED,
+          originalError: error.message,
+        })
+      );
     }
   };
 
-  updateProduct = async (req, res) => {
+  updateProduct = async (req, res, next) => {
     try {
       const { pid } = req.params;
       const { body } = req;
 
       const updatedProduct = await productService.updateProduct(pid, body);
       if (!updatedProduct) {
-        const customError = generateError("PRODUCT_NOT_FOUND");
+        next(
+          new CustomError({
+            name: errorsName.PRODUCT_NOT_FOUND,
+            message: errorsMessage.PRODUCT_NOT_FOUND,
+            cause: errorsCause.PRODUCT_NOT_FOUND,
+          })
+        );
         res.status(404).json({ error: customError.message });
       } else {
         await productManager.updateProduct(pid, body);
       }
       res.json(updatedProduct);
     } catch (error) {
-      const customError = generateError("PRODUCT_NOT_FOUND", "Product not found.");
-      res.status(500).json({ error: customError.message });
+      next(
+        new CustomError({
+          name: errorsName.PRODUCT_NOT_FOUND,
+          message: errorsMessage.PRODUCT_NOT_FOUND,
+          cause: errorsCause.PRODUCT_NOT_FOUND,
+          originalError: error.message,
+        })
+      );
     }
   };
 
-  deleteProduct = async (req, res) => {
+  deleteProduct = async (req, res, next) => {
     try {
       const { pid } = req.params;
       const deletedProduct = await productService.deleteProduct(pid);
 
       if (!deletedProduct) {
-        const customError = generateError("PRODUCT_NOT_FOUND");
+        next(
+          new CustomError({
+            name: errorsName.PRODUCT_NOT_FOUND,
+            message: errorsMessage.PRODUCT_NOT_FOUND,
+            cause: errorsCause.PRODUCT_NOT_FOUND,
+          })
+        );
         res.status(404).json({ error: customError.message });
       } else {
         res.json(deletedProduct);
       }
     } catch (error) {
-      const customError = generateError("INTERNAL_SERVER_ERROR", "Internal server error.");
-      res.status(500).json({ error: customError.message });
+      next(
+        new CustomError({
+          name: errorsName.INTERNAL_SERVER_ERROR,
+          message: errorsMessage.INTERNAL_SERVER_ERROR,
+          cause: errorsCause.INTERNAL_SERVER_ERROR,
+          originalError: error.message,
+        })
+      );
     }
   };
 }

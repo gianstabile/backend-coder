@@ -1,4 +1,5 @@
-import generateError from "../utils/errorHandler.js";
+import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { usersService } from "../dao/services/users.service.js";
 import { isValidPassword } from "../utils.js";
 import GetCurrentUserDTO from "../dao/currentuser.dto.js";
@@ -15,14 +16,23 @@ export const register = async (req, res, next) => {
 
     return res.send({ status: "success", message: "User registered", currentUser });
   } catch (error) {
-    const customError = generateError("INTERNAL_SERVER_ERROR", error.message);
+    const customError = CustomError({
+      name: errorsName.INTERNAL_SERVER_ERROR,
+      message: errorsMessage.INTERNAL_SERVER_ERROR,
+      cause: errorsCause.INTERNAL_SERVER_ERROR,
+      originalError: error.message,
+    });
     next(customError);
   }
 };
 
 export const failRegister = async (req, res, next) => {
   try {
-    throw generateError("AUTHENTICATION_ERROR");
+    throw CustomError({
+      name: errorsName.AUTHENTICATION_ERROR,
+      message: errorsMessage.AUTHENTICATION_ERROR,
+      cause: errorsCause.AUTHENTICATION_ERROR,
+    });
   } catch (error) {
     next(error);
   }
@@ -35,11 +45,19 @@ export const login = async (req, res, next) => {
     const user = await usersService.getUserById({ email });
 
     if (!user) {
-      throw generateError("INVALID_CREDENTIALS");
+      throw CustomError({
+        name: errorsName.INVALID_CREDENTIALS,
+        message: errorsMessage.INVALID_CREDENTIALS,
+        cause: errorsCause.INVALID_CREDENTIALS,
+      });
     }
 
     if (!isValidPassword(user, password)) {
-      throw generateError("INVALID_CREDENTIALS");
+      throw CustomError({
+        name: errorsName.INVALID_CREDENTIALS,
+        message: errorsMessage.INVALID_CREDENTIALS,
+        cause: errorsCause.INVALID_CREDENTIALS,
+      });
     }
 
     const userData = {

@@ -1,4 +1,5 @@
-import generateError from "../utils/errorHandler.js";
+import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { cartService } from "../dao/services/cart.service.js";
 import { productService } from "../dao/services/products.service.js";
 
@@ -7,7 +8,11 @@ export async function getCarts(req, res, next) {
     const carts = await cartService.getCarts();
 
     if (!carts || carts.length === 0) {
-      throw generateError("CART_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.CART_NOT_FOUND,
+        message: errorsMessage.CART_NOT_FOUND,
+        cause: errorsCause.CART_NOT_FOUND,
+      });
     }
 
     res.send({ status: "Success", payload: carts });
@@ -22,10 +27,14 @@ export async function getCartById(req, res, next) {
     const cart = await cartService.getCartById(cid);
 
     if (!cart) {
-      throw generateError("CART_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.CART_NOT_FOUND,
+        message: errorsMessage.CART_NOT_FOUND,
+        cause: errorsCause.CART_NOT_FOUND,
+      });
     }
 
-    return res.send({ status: "Success", payload: cart });
+    res.send({ status: "Success", payload: cart });
   } catch (error) {
     next(error);
   }
@@ -35,9 +44,23 @@ export async function getCartByUserId(req, res, next) {
   const { userId } = req.params;
   try {
     const cart = await cartService.getCartByUserId(userId);
+    if (!cart) {
+      throw new CustomError({
+        name: errorsName.CART_NOT_FOUND,
+        message: errorsMessage.CART_NOT_FOUND,
+        cause: errorsCause.CART_NOT_FOUND,
+      });
+    }
     res.status(200).json(cart);
   } catch (error) {
-    next(generateError("INTERNAL_SERVER_ERROR", error.message));
+    next(
+      new CustomError({
+        name: errorsName.INTERNAL_SERVER_ERROR,
+        message: errorsMessage.INTERNAL_SERVER_ERROR,
+        cause: errorsCause.INTERNAL_SERVER_ERROR,
+        originalError: error.message,
+      })
+    );
   }
 }
 
@@ -45,9 +68,23 @@ export async function getProductInCart(req, res, next) {
   const { cid, pid } = req.params;
   try {
     const productInCart = await cartService.getProductInCart(cid, pid);
+    if (!productInCart) {
+      throw new CustomError({
+        name: errorsName.PRODUCT_NOT_FOUND,
+        message: errorsMessage.PRODUCT_NOT_FOUND,
+        cause: errorsCause.PRODUCT_NOT_FOUND,
+      });
+    }
     res.status(200).json(productInCart);
   } catch (error) {
-    next(generateError("PRODUCT_IN_CART", error.message));
+    next(
+      new CustomError({
+        name: errorsName.PRODUCT_IN_CART,
+        message: errorsMessage.PRODUCT_IN_CART,
+        cause: errorsCause.PRODUCT_IN_CART,
+        originalError: error.message,
+      })
+    );
   }
 }
 
@@ -61,7 +98,14 @@ export async function createCart(req, res, next) {
       message: "Cart created successfully.",
     });
   } catch (error) {
-    next(generateError("CART_NOT_CREATED", error.message));
+    next(
+      new CustomError({
+        name: errorsName.CART_NOT_CREATED,
+        message: errorsMessage.CART_NOT_CREATED,
+        cause: errorsCause.CART_NOT_CREATED,
+        originalError: error.message,
+      })
+    );
   }
 }
 
@@ -71,29 +115,47 @@ export async function addCart(req, res, next) {
     const createdCart = await cartService.addCart(cart);
     res.status(201).json(createdCart);
   } catch (error) {
-    next(generateError("INTERNAL_SERVER_ERROR", error.message));
+    next(
+      new CustomError({
+        name: errorsName.INTERNAL_SERVER_ERROR,
+        message: errorsMessage.INTERNAL_SERVER_ERROR,
+        cause: errorsCause.INTERNAL_SERVER_ERROR,
+        originalError: error.message,
+      })
+    );
   }
 }
 
-export async function addProductToCart(req, res) {
-  const cid = req.params.cid;
-  const pid = req.params.pid;
+export async function addProductToCart(req, res, next) {
+  const { cid, pid } = req.params;
   const quantity = req.body.qty;
 
   try {
     if (!cid) {
-      throw generateError("INVALID_CART_ID");
+      throw new CustomError({
+        name: errorsName.INVALID_CART_ID,
+        message: errorsMessage.INVALID_CART_ID,
+        cause: errorsCause.INVALID_CART_ID,
+      });
     }
 
     if (!quantity || quantity <= 0) {
-      throw generateError("INVALID_CART_QTY");
+      throw new CustomError({
+        name: errorsName.INVALID_CART_QTY,
+        message: errorsMessage.INVALID_CART_QTY,
+        cause: errorsCause.INVALID_CART_QTY,
+      });
     }
 
     const cart = await cartService.getCartById(cid);
     const product = await productService.getProductById(pid);
 
     if (!cart || !product) {
-      throw generateError("CART_OR_PRODUCT_NOT");
+      throw new CustomError({
+        name: errorsName.CART_OR_PRODUCT_NOT_FOUND,
+        message: errorsMessage.CART_OR_PRODUCT_NOT_FOUND,
+        cause: errorsCause.CART_OR_PRODUCT_NOT_FOUND,
+      });
     }
 
     const productInCart = await cartService.getProductInCart(cid, pid);
@@ -125,7 +187,11 @@ export async function updateCart(req, res, next) {
 
     const cart = await cartService.getCartById(cid);
     if (!cart) {
-      throw generateError("CART_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.CART_NOT_FOUND,
+        message: errorsMessage.CART_NOT_FOUND,
+        cause: errorsCause.CART_NOT_FOUND,
+      });
     }
 
     const updatedCart = await cartService.updateCart(cid, cartData);
@@ -145,7 +211,11 @@ export async function updateProductQuantity(req, res, next) {
     const product = await productService.getProductById(pid);
 
     if (!cart || !product) {
-      throw generateError("CART_OR_PRODUCT_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.CART_OR_PRODUCT_NOT_FOUND,
+        message: errorsMessage.CART_OR_PRODUCT_NOT_FOUND,
+        cause: errorsCause.CART_OR_PRODUCT_NOT_FOUND,
+      });
     }
 
     await cartService.updateProductQuantity(cid, pid, quantity);
@@ -170,7 +240,12 @@ export async function emptyCart(req, res, next) {
       response: "Cart emptied successfully",
     });
   } catch (error) {
-    const customError = generateError("INTERNAL_SERVER_ERROR", error.message);
+    const customError = new CustomError({
+      name: errorsName.INTERNAL_SERVER_ERROR,
+      message: errorsMessage.INTERNAL_SERVER_ERROR,
+      cause: errorsCause.INTERNAL_SERVER_ERROR,
+      originalError: error.message,
+    });
     next(customError);
   }
 }
@@ -188,7 +263,12 @@ export async function deleteProductFromCart(req, res, next) {
       response: "Product deleted successfully from cart",
     });
   } catch (error) {
-    const customError = generateError("INTERNAL_SERVER_ERROR", error.message);
+    const customError = new CustomError({
+      name: errorsName.INTERNAL_SERVER_ERROR,
+      message: errorsMessage.INTERNAL_SERVER_ERROR,
+      cause: errorsCause.INTERNAL_SERVER_ERROR,
+      originalError: error.message,
+    });
     next(customError);
   }
 }
@@ -199,7 +279,11 @@ export async function purchaseCart(req, res, next) {
     const cart = await cartService.getCartById(cartId);
 
     if (!cart || cart.products.length === 0) {
-      throw generateError("CART_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.CART_NOT_FOUND,
+        message: errorsMessage.CART_NOT_FOUND,
+        cause: errorsCause.CART_NOT_FOUND,
+      });
     }
 
     let message = "";

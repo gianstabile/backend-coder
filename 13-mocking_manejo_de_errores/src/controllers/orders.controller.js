@@ -1,4 +1,5 @@
-import generateError from "../utils/errorHandler.js";
+import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { orderService } from "../dao/services/orders.service.js";
 
 export const getOrders = async (req, res, next) => {
@@ -6,7 +7,14 @@ export const getOrders = async (req, res, next) => {
     const orders = await orderService.getOrders();
     res.json({ status: "success", orders });
   } catch (error) {
-    next(generateError("ORDER_NOT_FOUND", error.message));
+    next(
+      new CustomError({
+        name: errorsName.ORDER_NOT_FOUND,
+        message: errorsMessage.ORDER_NOT_FOUND,
+        cause: errorsCause.ORDER_NOT_FOUND,
+        originalError: error.message,
+      })
+    );
   }
 };
 
@@ -16,13 +24,16 @@ export const getOrderById = async (req, res, next) => {
     const order = await orderService.getOrderById(id);
 
     if (!order) {
-      const customError = generateError("ORDER_NOT_FOUND");
-      return next(customError);
+      throw new CustomError({
+        name: errorsName.ORDER_NOT_FOUND,
+        message: errorsMessage.ORDER_NOT_FOUND,
+        cause: errorsCause.ORDER_NOT_FOUND,
+      });
     }
 
     res.json({ status: "success", order });
   } catch (error) {
-    next(generateError("ORDER_NOT_FOUND", error.message));
+    next(error);
   }
 };
 
@@ -31,23 +42,26 @@ export const createOrder = async (req, res, next) => {
     const { userId, cartId, products } = req.body;
 
     if (!userId || !cartId || !products) {
-      const customError = generateError("MISSING_FIELDS");
-      return next(customError);
+      throw new CustomError({
+        name: errorsName.MISSING_FIELDS,
+        message: errorsMessage.MISSING_FIELDS,
+        cause: errorsCause.MISSING_FIELDS,
+      });
     }
 
     const order = {
-      userId: userId,
-      cartId: cartId,
-      products: products,
+      userId,
+      cartId,
+      products,
     };
 
     const createdOrder = await orderService.createOrder(order);
-    return res.status(201).json({
+    res.status(201).json({
       status: "success",
       order: createdOrder,
     });
   } catch (error) {
-    next(generateError("ORDER_CREATION_FAILED", error.message));
+    next(error);
   }
 };
 
@@ -58,7 +72,11 @@ export const resolveOrder = async (req, res, next) => {
     const order = await orderService.getOrderById(oid);
 
     if (!order) {
-      throw generateError("ORDER_NOT_FOUND");
+      throw new CustomError({
+        name: errorsName.ORDER_NOT_FOUND,
+        message: errorsMessage.ORDER_NOT_FOUND,
+        cause: errorsCause.ORDER_NOT_FOUND,
+      });
     }
 
     order.status = resolve;
@@ -66,6 +84,6 @@ export const resolveOrder = async (req, res, next) => {
 
     res.json({ status: "success", result: "Order resolved" });
   } catch (error) {
-    next(generateError("ORDER_RESOLUTION_FAILED", error.message));
+    next(error);
   }
 };
