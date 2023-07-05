@@ -7,21 +7,32 @@ form.addEventListener("submit", async (e) => {
 
   const newPassword = document.getElementById("new-password").value;
 
-  const response = await fetch(`http://localhost:8080/api/restore/password?token=${token}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ newPassword }),
-  });
+  try {
+    const response = await fetch(`http://localhost:8080/api/restore/password?token=${token}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newPassword }),
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (!response.ok) {
+    if (result.error) {
+      toastr.error("An error occurred while resetting the password.");
+      console.error(result.error);
+    } else {
+      toastr.success("Password reset successfully. You can now log in with your new password.");
+      console.log("Password reset successfully.");
+      setTimeout(() => {
+        location.href = "/login";
+      }, 2500);
+    }
+  } catch (error) {
     toastr.error("An error occurred while resetting the password.");
-    console.error(result.error);
-  } else {
-    toastr.success("Password reset successfully. You can now log in with your new password.");
-    console.log("Password reset successfully.");
+    console.error(error);
+    setTimeout(() => {
+      location.href = "/restore-password";
+    }, 2500);
   }
 });
