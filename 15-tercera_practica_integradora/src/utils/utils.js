@@ -22,6 +22,9 @@ export const uploader = multer({ storage });
 // Bcrypt
 export const createHash = (password) => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password);
+export const comparePassword = (password, hashedPassword) => {
+  return bcrypt.compareSync(password, hashedPassword);
+};
 
 export const calculateExpirationDate = () => {
   const now = new Date();
