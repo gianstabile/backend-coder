@@ -3,6 +3,7 @@ import { restoreRepository } from "./../repositories/restore.repository.js";
 import UserRepository from "./../repositories/users.repository.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { restorePasswordTemplate } from "../emails/restore.password.js";
+import { comparePassword } from "../utils/utils.js";
 import CustomError from "../errors/customError.js";
 import { errorsCause, errorsMessage, errorsName } from "../errors/errorDictionary.js";
 import { logger } from "../utils/logger.js";
@@ -91,7 +92,7 @@ class RestoreService {
         throw new CustomError({
           name: errorsName.GENERAL_ERROR_NAME,
           message: errorsMessage.RESTORE_NOT_FOUND_MESSAGE,
-          cause: errorsCause.RETORE_NOT_FOUND_CAUSE,
+          cause: errorsCause.RESTORE_NOT_FOUND_CAUSE,
         });
       }
 
@@ -107,8 +108,20 @@ class RestoreService {
 
       await this.repository.setRestored(restore._id);
 
-      user.password = createHash(newPassword);
-      return await this.userRepository.saveUser(user);
+      const currentPassword = user.password;
+      if (comparePassword(newPassword, currentPassword)) {
+        logger.error("Current password already used. Change it.");
+        new CustomError({
+          name: errorsName.GENERAL_ERROR_NAME,
+          message: errorsMessage.INVALID_CURRENT_PASSWORD_MESSAGE,
+          cause: errorsCause.INVALID_CURRENT_PASSWORD_CAUSE,
+        });
+        return;
+      } else {
+        user.password = createHash(newPassword);
+        logger.info("Password changed successfully.");
+        return await this.userRepository.saveUser(user);
+      }
     } catch (error) {
       logger.error("An error occurred during password change:", error);
       throw new Error(error);
