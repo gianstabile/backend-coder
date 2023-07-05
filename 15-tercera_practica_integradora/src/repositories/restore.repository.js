@@ -1,8 +1,8 @@
-import { restore } from "./../dao/db/restore.dao.js";
+import { restoreDao } from "./../dao/db/restore.dao.js";
 
 class RestoreRepository {
   constructor() {
-    this.manager = restore;
+    this.manager = restoreDao;
   }
 
   create = async (data) => {
@@ -37,9 +37,9 @@ class RestoreRepository {
     }
   };
 
-  delete = async (id) => {
+  deleteById = async (id) => {
     try {
-      return await this.manager.delete(id);
+      return await this.manager.deleteById(id);
     } catch (error) {
       throw new Error(error);
     }

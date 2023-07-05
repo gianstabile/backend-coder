@@ -23,6 +23,14 @@ export default class UsersRepository {
     }
   };
 
+  saveUser = async (user) => {
+    try {
+      return await this.userDao.saveUser(user);
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
   findByCartId = async (cartId) => {
     try {
       return await this.userDao.findByCartId(cartId);
