@@ -1,6 +1,7 @@
 import { restoreService } from "./../services/restore.service.js";
 import { logger } from "../utils/logger.js";
 import CustomError from "../errors/customError.js";
+import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 
 export async function restore(req, res, next) {
   try {
@@ -28,8 +29,6 @@ export async function changePassword(req, res, next) {
     const { newPassword } = req.body;
     const { token } = req.query;
     const result = await restoreService.changePassword(token, newPassword);
-
-    logger.info("Password changed successfully.");
 
     res.status(200).send(result);
   } catch (error) {
