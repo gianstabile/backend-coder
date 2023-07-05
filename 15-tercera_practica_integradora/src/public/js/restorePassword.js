@@ -31,8 +31,5 @@ form.addEventListener("submit", async (e) => {
   } catch (error) {
     toastr.error("An error occurred while resetting the password.");
     console.error(error);
-    setTimeout(() => {
-      location.href = "/restore-password";
-    }, 2500);
   }
 });
