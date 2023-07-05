@@ -53,6 +53,7 @@ class RestoreService {
 
         await sendEmail(email, subject, message);
       }
+      return restore;
     } catch (error) {
       logger.error("An error occurred during restore creation.", error);
       throw new Error(error);
