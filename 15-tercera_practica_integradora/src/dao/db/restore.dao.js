@@ -37,7 +37,7 @@ class Restore {
     }
   };
 
-  delete = async (id) => {
+  deleteById = async (id) => {
     try {
       return await this.model.findByIdAndDelete(id);
     } catch (error) {
@@ -46,4 +46,4 @@ class Restore {
   };
 }
 
-export const restore = new Restore();
+export const restoreDao = new Restore();

@@ -21,6 +21,14 @@ export default class UsersDao {
     }
   };
 
+  saveUser = async (user) => {
+    try {
+      return await userModel.findOneAndUpdate({ _id: user._id }, { $set: user });
+    } catch (error) {
+      throw new Error("Error save user: " + error);
+    }
+  };
+
   findByCartId = async (cartId) => {
     try {
       const user = await userModel.findOne({ cart: cartId });
