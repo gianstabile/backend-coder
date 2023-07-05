@@ -40,6 +40,16 @@ export default class UsersService {
     }
   };
 
+  findByEmail = async (email) => {
+    try {
+      const user = await this.usersRepository.findByEmail(email);
+
+      return user;
+    } catch (error) {
+      throw new Error(`Error retrieving user by email: ${error.message}`);
+    }
+  };
+
   changeRole = async (userId) => {
     try {
       const user = await this.repository.findById(userId);
