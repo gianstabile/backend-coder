@@ -1,5 +1,6 @@
 export const errorsName = {
   INTERNAL_SERVER_ERROR: "Internal server error. Please try again later.",
+  GENERAL_ERROR_NAME: "User error.",
   // PRODUCTS
   PRODUCT_NOT_FOUND: "product_not_found",
   PRODUCT_IN_CART: "product_in_cart",
@@ -41,6 +42,7 @@ export const errorsName = {
 
   //RESTORE
   RESTORE_ERROR_NAME: "Restore error",
+  CHANGE_PASSWORD_ERROR_NAME: "Change password error",
 };
 
 export const errorsMessage = {
@@ -76,6 +78,7 @@ export const errorsMessage = {
   UNAUTHORIZED_ACCESS: "Unauthorized access. Please log in.",
   USER_NOT_OWNER_MESSAGE: "User not have permissions to delete",
   NOT_GET_USER_ID_MESSAGE: "User id is not passed in the request",
+  USER_NOT_FOUND_MESSAGE: "User not found for restore email.",
 
   // ORDERS
   ORDER_NOT_FOUND: "Order not found.",
@@ -90,6 +93,12 @@ export const errorsMessage = {
   USER_NOT_FOUND_MESSAGE: "User not found",
   RESTORE_NOT_FOUND_MESSAGE: "Restore not found",
   TOKEN_EXPIRED_MESSAGE: "Token was expired",
+
+  //OTHERS
+  CHANGE_PASSWORD_ERROR_MESSAGE: "Failed to change password. An error occurred during password change.",
+  CURRENT_PASSWORD_INCORRECT_MESSAGE: "Current password is incorrect.",
+  TOKEN_RESTORE_NOT_FOUND_OR_EXPIRED_MESSAGE: "Token restore not found or expired.",
+  INVALID_CURRENT_PASSWORD_MESSAGE: "Invalid current password. Try with other.",
 };
 
 export const errorsCause = {
@@ -139,4 +148,5 @@ export const errorsCause = {
   USER_EMAIL_NOT_EXISTS_CAUSE: "User email not exists",
   RETORE_NOT_FOUND_CAUSE: "The restore token may was expired or not exists",
   TOKEN_EXPIRED_CAUSE: "The token already has expired, please try restore password again",
+  INVALID_CURRENT_PASSWORD_CAUSE: "Password already used. Change it.",
 };
