@@ -1,10 +1,11 @@
 import { calculateExpirationDate, createHash, generateUniqueToken } from "../utils/utils.js";
-import UserRepository from "./../repositories/users.repository.js";
 import { restoreRepository } from "./../repositories/restore.repository.js";
+import UserRepository from "./../repositories/users.repository.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { restorePasswordTemplate } from "../emails/restore.password.js";
 import CustomError from "../errors/customError.js";
 import { errorsCause, errorsMessage, errorsName } from "../errors/errorDictionary.js";
-import { restorePasswordTemplate } from "../emails/restore.password.js";
+import { logger } from "../utils/logger.js";
 
 const userRepository = new UserRepository();
 
@@ -14,13 +15,14 @@ class RestoreService {
     this.userRepository = userRepository;
   }
 
-  async createRestore(email) {
+  createRestore = async (email) => {
     try {
       const userExists = await this.userRepository.findByEmail(email);
 
       if (!userExists) {
-        CustomError.generateCustomError({
-          name: errorsName.RESTORE_ERROR_NAME,
+        logger.error("User not found.");
+        throw new CustomError({
+          name: errorsName.GENERAL_ERROR_NAME,
           message: errorsMessage.USER_NOT_FOUND_MESSAGE,
           cause: errorsCause.USER_EMAIL_NOT_EXISTS_CAUSE,
         });
@@ -39,8 +41,9 @@ class RestoreService {
       const restore = await this.repository.create(restoreData);
 
       if (!restore) {
-        CustomError.generateCustomError({
-          name: errorsName.RESTORE_ERROR_NAME,
+        logger.error("Failed to create restore.");
+        throw new CustomError({
+          name: errorsName.GENERAL_ERROR_NAME,
           message: errorsMessage.RESTORE_NOT_CREATED_MESSAGE,
           cause: errorsCause.RESTORE_NOT_CREATED_CAUSE,
         });
@@ -51,14 +54,16 @@ class RestoreService {
         await sendEmail(email, subject, message);
       }
     } catch (error) {
+      logger.error("An error occurred during restore creation.", error);
       throw new Error(error);
     }
-  }
+  };
 
-  async restorePassword(token) {
+  restorePassword = async (token) => {
     try {
       const restore = await this.repository.findByToken(token);
       if (!restore) {
+        logger.info("Password restore not found for token:", token);
         return null;
       }
 
@@ -66,29 +71,34 @@ class RestoreService {
       const expirationDatetime = new Date(restore.expired_at);
 
       if (actualDatetime.getTime() > expirationDatetime.getTime()) {
+        logger.info("Password restore has expired for token:", token);
         return null;
       }
 
       return restore;
     } catch (error) {
+      logger.error("An error occurred during password restore:", error);
       throw new Error(error);
     }
-  }
+  };
 
-  async changePassword(token, newPassword) {
+  changePassword = async (token, newPassword) => {
     try {
       const restore = await this.repository.findByToken(token);
       if (!restore) {
-        CustomError.generateCustomError({
-          name: errorsName.RESTORE_ERROR_NAME,
+        logger.error("Password restore not found for token:", token);
+        throw new CustomError({
+          name: errorsName.GENERAL_ERROR_NAME,
           message: errorsMessage.RESTORE_NOT_FOUND_MESSAGE,
           cause: errorsCause.RETORE_NOT_FOUND_CAUSE,
         });
       }
+
       const user = await this.userRepository.findByEmail(restore.email);
       if (!user) {
-        CustomError.generateCustomError({
-          name: errorsName.RESTORE_ERROR_NAME,
+        logger.error("User not found for restore email:", restore.email);
+        throw new CustomError({
+          name: errorsName.GENERAL_ERROR_NAME,
           message: errorsMessage.USER_NOT_FOUND_MESSAGE,
           cause: errorsCause.USER_EMAIL_NOT_EXISTS_CAUSE,
         });
@@ -99,9 +109,10 @@ class RestoreService {
       user.password = createHash(newPassword);
       return await this.userRepository.saveUser(user);
     } catch (error) {
+      logger.error("An error occurred during password change:", error);
       throw new Error(error);
     }
-  }
+  };
 }
 
 export const restoreService = new RestoreService();
