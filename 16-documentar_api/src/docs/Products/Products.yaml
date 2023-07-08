@@ -19,6 +19,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - Products
+      summary: Crea un nuevo producto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewProduct"
+      responses:
+        "200":
+          description: Éxito
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Error de solicitud
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /api/products/{pid}:
     get:
@@ -101,6 +124,12 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProduct"
       responses:
         "200":
           description: El producto fue actualizado exitosamente.
@@ -108,7 +137,7 @@ paths:
             application/json:
               schema:
                 type: object
-                $ref: "#/components/schemas/Products"
+                $ref: "#/components/schemas/Product"
         "404":
           description: El producto con el ID especificado no fue encontrado.
           content:
@@ -151,7 +180,7 @@ paths:
 
 components:
   schemas:
-    Products:
+    Product:
       type: object
       properties:
         _id:
@@ -169,12 +198,6 @@ components:
         category:
           type: string
           description: Categoría del producto
-          enum:
-            - Tabacos rubios
-            - Blends
-            - Tabacos negros
-            - Packs
-            - Otros
         stock:
           type: number
           description: Cantidad en stock del producto
@@ -205,6 +228,40 @@ components:
           - thumbnail1.jpg
           - thumbnail2.jpg
         owner: "user123"
+    NewProduct:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      price:
+        type: number
+      status:
+        type: integer
+      code:
+        type: string
+      stock:
+        type: integer
+      category:
+        type: string
+    UpdateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        status:
+          type: integer
+        code:
+          type: string
+        stock:
+          type: integer
+        category:
+          type: string
     Error:
       type: object
       properties:
