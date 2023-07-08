@@ -12,7 +12,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "500":
           description: Error en la solicitud de listado de carritos.
           content:
@@ -32,7 +32,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "500":
           description: Error en la solicitud de creación del carrito.
           content:
@@ -60,7 +60,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "404":
           description: El carrito con el ID especificado no fue encontrado.
           content:
@@ -93,7 +93,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "404":
           description: El carrito con el ID especificado no fue encontrado.
           content:
@@ -126,7 +126,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "404":
           description: El carrito con el ID especificado no fue encontrado.
           content:
@@ -166,7 +166,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Carts"
+                  $ref: "#/components/schemas/Cart"
         "404":
           description: El carrito o el producto con los IDs especificados no fue encontrado.
           content:
@@ -197,6 +197,17 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                quantity:
+                  type: number
       responses:
         "200":
           description: La cantidad del producto en el carrito fue actualizada exitosamente.
@@ -258,7 +269,7 @@ paths:
 
 components:
   schemas:
-    Carts:
+    Cart:
       type: object
       properties:
         _id:
@@ -282,6 +293,7 @@ components:
             quantity: 2
           - product: "product456"
             quantity: 1
+
     Error:
       type: object
       properties:
@@ -289,3 +301,16 @@ components:
           type: string
         error:
           type: string
+
+    CartProduct:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID del producto en el carrito
+        product:
+          $ref: "#/components/schemas/Product"
+          description: Detalles del producto
+        quantity:
+          type: integer
+          description: Cantidad del producto en el carrito
