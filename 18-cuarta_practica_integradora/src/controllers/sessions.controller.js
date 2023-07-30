@@ -1,7 +1,10 @@
 import { logger } from "../utils/logger.js";
 import passport from "passport";
 import userModel from "../dao/models/user.model.js";
+import UsersRepository from "../repositories/users.repository.js";
 import { createHash } from "../utils/utils.js";
+
+const usersRepository = new UsersRepository()
 
 export const register = passport.authenticate("register", {
   failureRedirect: "/api/sessions/failregister",
@@ -17,7 +20,7 @@ export const getLogin = passport.authenticate("login", {
   failureRedirect: "/api/sessions/faillogin",
 });
 
-export const processLogin = (req, res) => {
+export const processLogin = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ status: "error", error: "Invalid credentials." });
@@ -39,6 +42,8 @@ export const processLogin = (req, res) => {
 
     req.session.user = user;
 
+    await usersRepository.updateLastConnection(userId, currentDateTime);
+
     logger.info(`User logged in at ${currentDateTime}`);
 
     res.json({
@@ -58,9 +63,6 @@ export const failLogin = (req, res) => {
 
 export const logout = (req, res) => {
   try {
-    const currentDateTime = new Date();
-    req.session.user.last_connection = currentDateTime;
-
     req.session.destroy((err) => {
       logger.info(`User logged out at: ${currentDateTime}`);
 

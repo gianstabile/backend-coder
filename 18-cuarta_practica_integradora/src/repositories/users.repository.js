@@ -25,6 +25,9 @@ export default class UsersRepository {
 
   saveUser = async (user) => {
     try {
+      if (user.last_connection) {
+        await this.userDao.updateLastConnection(user._id, user.last_connection);
+      }
       return await this.userDao.saveUser(user);
     } catch (error) {
       throw new Error(error);
@@ -66,6 +69,22 @@ export default class UsersRepository {
   updateDocuments = async (userId, createdDocument) => {
     try {
       return await this.userDao.updateDocuments(userId, createdDocument);
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  updateLastConnection = async (userId, lastConnection) => {
+    try {
+      await this.userDao.updateLastConnection(userId, lastConnection);
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  updateHasUploadedDocuments = async (userId, value) => {
+    try {
+      await this.userDao.updateHasUploadedDocuments(userId, value);
     } catch (error) {
       throw new Error(error);
     }

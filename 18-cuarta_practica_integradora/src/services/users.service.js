@@ -1,9 +1,7 @@
 import usersRepository from "../repositories/users.repository.js";
 import { errorsCause, errorsMessage, errorsName } from "../errors/errorDictionary.js";
+import documentService from "./documents.service.js";
 import __dirname from "../utils/utils.js";
-import path from "path";
-
-const basePath = path.resolve();
 
 class UsersService {
   constructor() {
@@ -54,7 +52,7 @@ class UsersService {
     }
   };
 
-  changeRole = async (userId) => {
+  changeRole = async (userId, newRole) => {
     try {
       const user = await this.usersRepository.findById(userId);
       if (!user) {
@@ -64,18 +62,32 @@ class UsersService {
           cause: errorsCause.USER_NOT_FOUND,
         });
       }
-      const role = user.role === "user" ? (user.role = "premium") : "user";
-      const data = await this.usersRepository.changeRole(user._id, role);
-      const response = {
-        _id: data._id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        email: data.email,
-        age: data.age,
-        role: data.role,
-        cart: data.cart,
+
+      // Verificar si el usuario tiene documentos cargados
+      const documents = await documentService.findDocsById({ user: userId });
+      if (documents.length === 0) {
+        CustomError.generateCustomError({
+          name: errorsName.DOCUMENTS_REQUIRED,
+          message: errorsMessage.DOCUMENTS_REQUIRED,
+          cause: errorsCause.DOCUMENTS_REQUIRED,
+        });
+      }
+
+      user.hasUploadedDocuments = user.documents && user.documents.length > 0;
+
+      // Cambiar el rol del usuario
+      user.role = newRole;
+      await this.usersRepository.changeRole(user._id, role);
+
+      return {
+        _id: user._id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        age: user.age,
+        role: user.role,
+        cart: user.cart,
       };
-      return response;
     } catch (error) {
       throw new Error(error);
     }

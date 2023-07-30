@@ -50,9 +50,8 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await usersService.getUserById({ email });
+    const user = await usersService.getUserById(email);
     const currentDateTime = new Date();
-    console.log("nuevo acceso:", currentDateTime);
 
     if (!user) {
       logger.warning("Invalid user.");
@@ -84,9 +83,11 @@ export const login = async (req, res, next) => {
 
     const currentUser = new GetCurrentUserDTO(userData);
 
+    await usersRepository.updateLastConnection(user._id, currentDateTime);
+
     req.session.user = currentUser;
 
-    logger.info("User login successful");
+    logger.info(`User login successful at ${currentDateTime}`);
     return res.send({
       status: "sucess",
       message: "Login sucessful",
@@ -112,13 +113,18 @@ export const gitHubLogin = (req, res, next) => {
 
 export const logout = async (req, res) => {
   try {
+    if (req.session.user) {
+      const currentDateTime = new Date();
+      req.session.user.last_connection = currentDateTime;
+    }
+
     req.session.destroy((err) => {
       if (err) {
         logger.error("Logout error", err);
         return res.status(500).send({ status: "error", message: "Logout error", error: err });
       }
       res.clearCookie("connect.sid");
-      logger.info("User logged out");
+      logger.info(`User logout at ${currentDateTime}`);
       res.redirect("/login");
     });
   } catch (error) {
@@ -130,12 +136,22 @@ export const logout = async (req, res) => {
 export async function changeRole(req, res) {
   try {
     const { id } = req.params;
-    const result = await usersService.changeRole(id);
-    logger.info("Ok");
-    return res.send({
-      status: "success",
-      result,
-    });
+
+    const user = await usersService.getUserById(id);
+    if (!user) {
+      logger.warning("User not found.");
+      return res.status(404).json({ status: "error", message: "User not found." });
+    }
+
+    const hasUploadedDocuments = user.documents && user.documents.length > 0;
+    if (!hasUploadedDocuments) {
+      logger.warning("User must upload documents before becoming premium.");
+      return res.status(400).json({ status: "error", message: "User must upload documents before becoming premium." });
+    }
+
+    const updatedUser = await usersService.changeRole(id, "premium");
+
+    return res.json({ status: "success", message: "User role updated to premium.", user: updatedUser });
   } catch (error) {
     logger.error(error.message);
   }
@@ -169,6 +185,8 @@ export async function uploadDocuments(req, res, next) {
         createdDocuments.push(createdDocument);
       })
     );
+
+    await usersRepository.updateHasUploadedDocuments(userId, true);
 
     logger.info("Documents created successfully.");
     res.json({ status: "success", message: "Documents created successfully." });

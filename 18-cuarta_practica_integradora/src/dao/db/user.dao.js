@@ -40,9 +40,9 @@ export default class UsersDao {
 
   findByEmail = async (email) => {
     try {
-      return await userModel.findOne({ email: email });
+      return await userModel.findOne({ email });
     } catch (error) {
-      throw new Error(error);
+      throw new Error("Failed to get user by email.");
     }
   };
 
@@ -67,6 +67,22 @@ export default class UsersDao {
       await userModel.updateOne({ _id: userId }, { $push: { documents: createdDocument } });
     } catch (error) {
       throw new Error("Failed to update documents.");
+    }
+  };
+
+  updateLastConnection = async (userId, lastConnection) => {
+    try {
+      await userModel.findByIdAndUpdate(userId, { last_connection: lastConnection });
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  updateHasUploadedDocuments = async (userId, value) => {
+    try {
+      await userModel.findByIdAndUpdate(userId, { hasUploadedDocuments: value });
+    } catch (error) {
+      throw new Error("Failed to update hasUploadedDocuments.");
     }
   };
 }

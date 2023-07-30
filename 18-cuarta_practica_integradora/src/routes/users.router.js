@@ -5,10 +5,10 @@ import { uploader } from "../utils/utils.js";
 
 const router = Router();
 
-router.post("/premium/:id", authentication(), authorize(["admin"]), changeRole);
+router.get("/:uid/documents", authentication(), getDocumentsByUser);
 router.post("/:uid/documents", authentication(), uploader.array("document"), uploadDocuments);
 router.post("/:uid/update", authentication(), uploader.single("profile"), uploadProfileImage);
-router.get("/:uid/documents", authentication(), getDocumentsByUser);
+router.post("/premium/:id", authentication(), authorize(["admin"]), changeRole);
 router.delete("/:uid/documents/:did", deleteDocumentsById);
 
 export default router;
