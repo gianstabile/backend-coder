@@ -2,18 +2,31 @@ import documentsModel from "../dao/models/documents.model.js";
 
 const documentService = {
   createDocument: async (documentData) => {
-    const document = new documentsModel(documentData);
-    await document.save();
-    return document;
+    try {
+      const document = new documentsModel(documentData);
+      await document.save();
+      return document;
+    } catch (error) {
+      throw new Error("Failed to create the document.");
+    }
   },
 
-  findDocsById: (filter) => {
-    return documentsModel.find(filter).lean();
+  findDocsById: async (filter) => {
+    try {
+      const documents = await documentsModel.find(filter).lean();
+      return documents;
+    } catch (error) {
+      throw new Error("Failed to fetch documents.");
+    }
   },
 
   deleteDocumentById: async (documentId) => {
     try {
-      await documentsModel.findByIdAndRemove(documentId);
+      const deletedDocument = await documentsModel.findByIdAndRemove(documentId);
+      if (!deletedDocument) {
+        throw new Error("Document not found.");
+      }
+      return deletedDocument;
     } catch (error) {
       throw new Error("Failed to delete the document.");
     }

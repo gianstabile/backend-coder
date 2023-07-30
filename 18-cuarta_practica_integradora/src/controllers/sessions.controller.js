@@ -32,7 +32,7 @@ export const processLogin = (req, res) => {
       email: req.user.email,
       age: req.user.age,
       role: req.user.role,
-      thumbnails: req.user.thumbnails,
+      profilePicture: req.user.profilePicture,
       cart: req.user.cart,
       last_connection: currentDateTime,
     };

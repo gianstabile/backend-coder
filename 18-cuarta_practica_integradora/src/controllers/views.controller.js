@@ -141,7 +141,7 @@ export default class ViewsController {
       const user = new GetCurrentUserDTO(req.session.user);
       const userId = req.session.user.id;
       const role = req.session.user.role;
-      const thumbnails = req.session.user.thumbnails ? req.session.user.thumbnails : [];
+      const profilePicture = req.session.user.profilePicture;
       const documents = await documentService.findDocsById({ user: userId });
 
       res.render("profile", {
@@ -149,7 +149,7 @@ export default class ViewsController {
         userId,
         role,
         documents,
-        thumbnails,
+        profilePicture,
         style: "./css/index.css",
         nameShopping: "DOMINGOU",
         sectionPage: "Profile",

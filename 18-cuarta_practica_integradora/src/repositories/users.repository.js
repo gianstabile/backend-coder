@@ -62,4 +62,12 @@ export default class UsersRepository {
       throw new Error(error);
     }
   };
+
+  updateDocuments = async (userId, createdDocument) => {
+    try {
+      return await this.userDao.updateDocuments(userId, createdDocument);
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
 }

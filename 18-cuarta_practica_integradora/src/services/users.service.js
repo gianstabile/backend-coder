@@ -1,5 +1,9 @@
 import usersRepository from "../repositories/users.repository.js";
 import { errorsCause, errorsMessage, errorsName } from "../errors/errorDictionary.js";
+import __dirname from "../utils/utils.js";
+import path from "path";
+
+const basePath = path.resolve();
 
 class UsersService {
   constructor() {
@@ -52,7 +56,7 @@ class UsersService {
 
   changeRole = async (userId) => {
     try {
-      const user = await this.repository.findById(userId);
+      const user = await this.usersRepository.findById(userId);
       if (!user) {
         CustomError.generateCustomError({
           name: errorsName.USER_NOT_FOUND,
@@ -61,7 +65,7 @@ class UsersService {
         });
       }
       const role = user.role === "user" ? (user.role = "premium") : "user";
-      const data = await this.repository.changeRole(user._id, role);
+      const data = await this.usersRepository.changeRole(user._id, role);
       const response = {
         _id: data._id,
         first_name: data.first_name,
@@ -74,6 +78,30 @@ class UsersService {
       return response;
     } catch (error) {
       throw new Error(error);
+    }
+  };
+
+  updateProfileImage = async (userId, profilePicture) => {
+    try {
+      const user = await this.usersRepository.findById(userId);
+      if (!user) {
+        throw new Error("User not found.");
+      }
+
+      if (!profilePicture) {
+        throw new Error("No image was uploaded.");
+      }
+
+      const baseUrl = "http://localhost:8080";
+      const profilePictureUrl = `${baseUrl}/uploads/profiles/${profilePicture}`;
+
+      user.profilePicture = profilePictureUrl;
+
+      await this.usersRepository.saveUser(user);
+
+      return user;
+    } catch (error) {
+      throw new Error("Failed to upload profile image.");
     }
   };
 }

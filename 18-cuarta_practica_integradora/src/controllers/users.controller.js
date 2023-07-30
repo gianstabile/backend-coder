@@ -2,9 +2,12 @@ import { logger } from "../utils/logger.js";
 import CustomError from "../errors/customError.js";
 import { errorsName, errorsCause, errorsMessage } from "../errors/errorDictionary.js";
 import { usersService } from "../services/users.service.js";
+import UsersRepository from "../repositories/users.repository.js";
 import documentService from "../services/documents.service.js";
 import { isValidPassword } from "../utils/utils.js";
 import GetCurrentUserDTO from "../dto/currentuser.dto.js";
+
+const usersRepository = new UsersRepository();
 
 export const register = async (req, res, next) => {
   try {
@@ -49,6 +52,7 @@ export const login = async (req, res, next) => {
 
     const user = await usersService.getUserById({ email });
     const currentDateTime = new Date();
+    console.log("nuevo acceso:", currentDateTime);
 
     if (!user) {
       logger.warning("Invalid user.");
@@ -73,7 +77,7 @@ export const login = async (req, res, next) => {
       email: user.email,
       age: user.age,
       role: user.role,
-      thumbnails: user.thumbnails,
+      profilePicture: user.profilePicture,
       cart: user.cart,
       last_connection: currentDateTime,
     };
@@ -137,7 +141,7 @@ export async function changeRole(req, res) {
   }
 }
 
-export async function uploadDocuments(req, res) {
+export async function uploadDocuments(req, res, next) {
   try {
     const userId = req.params.uid;
     const files = req.files;
@@ -159,6 +163,9 @@ export async function uploadDocuments(req, res) {
         };
 
         const createdDocument = await documentService.createDocument(documentData);
+
+        await usersRepository.updateDocuments(userId, createdDocument._id);
+
         createdDocuments.push(createdDocument);
       })
     );
@@ -168,6 +175,23 @@ export async function uploadDocuments(req, res) {
   } catch (error) {
     logger.error("Failed to create documents:", error);
     next(error);
+  }
+}
+
+export async function uploadProfileImage(req, res) {
+  try {
+    const userId = req.session.user.id;
+    const profilePicture = req.file.filename;
+
+    if (!profilePicture) {
+      return res.status(400).json({ status: "error", message: "No image was uploaded." });
+    }
+
+    const user = await usersService.updateProfileImage(userId, profilePicture);
+
+    res.status(200).json({ message: "Profile updated successfully.", user });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 }
 
