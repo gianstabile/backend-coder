@@ -61,4 +61,12 @@ export default class UsersDao {
       throw new Error(error);
     }
   };
+
+  updateDocuments = async (userId, createdDocument) => {
+    try {
+      await userModel.updateOne({ _id: userId }, { $push: { documents: createdDocument } });
+    } catch (error) {
+      throw new Error("Failed to update documents.");
+    }
+  };
 }

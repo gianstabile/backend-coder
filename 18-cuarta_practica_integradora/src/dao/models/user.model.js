@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  thumbnails: Array,
+  profilePicture: String,
   role: {
     type: String,
     enum: ["admin", "user", "premium"],
